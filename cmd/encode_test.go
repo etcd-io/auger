@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/jpbetz/auger/pkg/encoding"
+	"github.com/etcd-io/auger/pkg/encoding"
 )
 
 var encodeTests = []struct {

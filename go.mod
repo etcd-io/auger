@@ -1,4 +1,4 @@
-module github.com/jpbetz/auger
+module github.com/etcd-io/auger
 
 go 1.19
 

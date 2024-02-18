@@ -28,7 +28,7 @@ import (
 
 	bolt "github.com/coreos/bbolt"
 	"github.com/coreos/etcd/mvcc/mvccpb"
-	"github.com/jpbetz/auger/pkg/encoding"
+	"github.com/etcd-io/auger/pkg/encoding"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
