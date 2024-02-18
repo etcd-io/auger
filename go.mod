@@ -21,7 +21,7 @@ require (
 	github.com/google/gofuzz v0.0.0-20161122191042-44d81051d367 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/json-iterator/go v0.0.0-20171212105241-13f86432b882 // indirect
-	github.com/spf13/pflag v1.0.0 // indirect
+	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
 	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
 	golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f // indirect
