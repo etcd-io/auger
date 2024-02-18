@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/jpbetz/auger/pkg/data"
+	"github.com/etcd-io/auger/pkg/data"
 	"github.com/spf13/cobra"
 )
 

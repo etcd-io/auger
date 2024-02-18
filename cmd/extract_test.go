@@ -21,7 +21,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/jpbetz/auger/pkg/encoding"
+	"github.com/etcd-io/auger/pkg/encoding"
 )
 
 const (

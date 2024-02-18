@@ -14,7 +14,7 @@
 # limitations under the License.
 
 NAME ?= auger
-PKG ?= github.com/jpbetz/$(NAME)
+PKG ?= github.com/etcd-io/$(NAME)
 GO_VERSION ?= 1.20.5
 GOOS ?= linux
 GOARCH ?= amd64

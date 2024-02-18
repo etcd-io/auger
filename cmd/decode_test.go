@@ -25,7 +25,7 @@ import (
 	"testing"
 
 	"github.com/coreos/etcd/mvcc/mvccpb"
-	"github.com/jpbetz/auger/pkg/encoding"
+	"github.com/etcd-io/auger/pkg/encoding"
 )
 
 var decodeTests = []struct {
