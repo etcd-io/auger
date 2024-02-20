@@ -14,7 +14,7 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/ghodss/yaml v0.0.0-20150909031657-73d445a93680 // indirect
+	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/glog v1.2.0 // indirect
 	github.com/golang/protobuf v0.0.0-20161109072736-4bd1920723d7 // indirect
