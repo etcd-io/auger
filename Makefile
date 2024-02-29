@@ -57,7 +57,7 @@ clean:
 
 generate:
 	go mod vendor
-	rm ./pkg/encoding/scheme.go
-	./hack/gen_scheme.sh > pkg/encoding/scheme.go
+	rm ./pkg/scheme/scheme.go
+	./hack/gen_scheme.sh > pkg/scheme/scheme.go
 
 .PHONY: build test release release-docker-build clean generate
