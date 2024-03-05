@@ -55,4 +55,9 @@ release-docker-build:
 clean:
 	rm -rf build
 
-.PHONY: build test release release-docker-build clean
+generate:
+	go mod vendor
+	rm ./pkg/scheme/scheme.go
+	./hack/gen_scheme.sh > pkg/scheme/scheme.go
+
+.PHONY: build test release release-docker-build clean generate
