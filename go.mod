@@ -1,6 +1,6 @@
 module github.com/etcd-io/auger
 
-go 1.19
+go 1.21
 
 require (
 	github.com/coreos/bbolt v1.3.1-coreos.3
