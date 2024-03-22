@@ -37,8 +37,6 @@ var (
 	keyBucket  = []byte("key")
 	metaBucket = []byte("meta")
 
-	consistentIndexKeyName  = []byte("consistent_index")
-	scheduledCompactKeyName = []byte("scheduledCompactRev")
 	finishedCompactKeyName  = []byte("finishedCompactRev")
 )
 
@@ -199,22 +197,6 @@ func getCompactRevision(db *bolt.DB) (int64, error) {
 		return 0, err
 	}
 	return compactRev, nil
-}
-
-func getConsistentIndex(db *bolt.DB) (int64, error) {
-	consistentIndex := int64(0)
-	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(metaBucket)
-		consistentIndexBytes := b.Get(consistentIndexKeyName)
-		if len(consistentIndexBytes) != 0 {
-			consistentIndex = int64(binary.BigEndian.Uint64(consistentIndexBytes[0:8]))
-		}
-		return nil
-	})
-	if err != nil {
-		return 0, err
-	}
-	return consistentIndex, nil
 }
 
 // ListKeySummaries returns a result set with all the provided filters and projections applied.
@@ -409,7 +391,9 @@ func walkRevision(db *bolt.DB, revision int64, f func(r revKey, kv *mvccpb.KeyVa
 
 	for _, s := range sorted {
 		if !s.rev.tombstone {
-			f(s.rev, s.kv)
+			if _, err := f(s.rev, s.kv); err != nil {
+				return err
+			}
 		}
 	}
 	return nil

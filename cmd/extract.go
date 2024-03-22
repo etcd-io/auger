@@ -107,7 +107,7 @@ func init() {
 	extractCmd.Flags().BoolVar(&opts.raw, "raw", false, "Don't attempt to decode the etcd value")
 	extractCmd.Flags().StringVar(&opts.fields, "fields", Key, fmt.Sprintf("Fields to include when listing entries, comma separated list of: %v", SummaryFields))
 	extractCmd.Flags().StringVar(&opts.template, "template", "", fmt.Sprintf("golang template to use when listing entries, see https://golang.org/pkg/text/template, template is provided an object with the fields: %v. The Value field contains the entire kubernetes resource object which also may be dereferenced using a dot seperated path.", templateFields()))
-	extractCmd.Flags().StringVar(&opts.filter, "filter", "", fmt.Sprintf("Filter entries using a comma separated list of '<field>=value' constraints. Fields used in filters use the same naming as --template fields, e.g. .Value.metadata.namespace"))
+	extractCmd.Flags().StringVar(&opts.filter, "filter", "", "Filter entries using a comma separated list of '<field>=value' constraints. Fields used in filters use the same naming as --template fields, e.g. .Value.metadata.namespace")
 }
 
 const (
@@ -319,7 +319,7 @@ func summarize(s *data.KeySummary, fields []string) (string, error) {
 	for i, field := range fields {
 		switch field {
 		case Key:
-			values[i] = fmt.Sprintf("%s", s.Key)
+			values[i] = s.Key
 		case ValueSize:
 			values[i] = fmt.Sprintf("%d", s.Stats.ValueSize)
 		case AllVersionsValueSize:
@@ -327,7 +327,7 @@ func summarize(s *data.KeySummary, fields []string) (string, error) {
 		case VersionCount:
 			values[i] = fmt.Sprintf("%d", s.Stats.VersionCount)
 		case Value:
-			values[i] = fmt.Sprintf("%s", s.ValueJson())
+			values[i] = s.ValueJson()
 		default:
 			return "", fmt.Errorf("unrecognized field: %s", field)
 		}

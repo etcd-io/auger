@@ -98,6 +98,7 @@ func init() {
 //
 // After this, RawExtensions in Kubernetes types will serialize kube-aggregator types
 // correctly.
+//nolint:errcheck
 func AddToScheme(scheme *runtime.Scheme) {
 	admissionv1beta1.AddToScheme(scheme)
 
