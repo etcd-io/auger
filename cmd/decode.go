@@ -19,7 +19,6 @@ package cmd
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 
 	"bufio"
@@ -181,7 +180,7 @@ func run(metaOnly bool, outMediaType string, in []byte, out io.Writer) error {
 // Readinput reads command line input, either from a provided input file or from stdin.
 func readInput(inputFilename string) ([]byte, error) {
 	if inputFilename != "" {
-		data, err := ioutil.ReadFile(inputFilename)
+		data, err := os.ReadFile(inputFilename)
 		if err != nil {
 			return nil, fmt.Errorf("error reading input file %s: %v", inputFilename, err)
 		}
@@ -197,7 +196,7 @@ func readInput(inputFilename string) ([]byte, error) {
 		fmt.Fprintln(os.Stderr, "warn: waiting on stdin from tty")
 	}
 
-	stdin, err := ioutil.ReadAll(os.Stdin)
+	stdin, err := io.ReadAll(os.Stdin)
 	if err != nil {
 		return nil, fmt.Errorf("unable to read data from stdin: %v", err)
 	}

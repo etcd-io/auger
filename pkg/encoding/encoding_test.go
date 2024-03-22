@@ -28,7 +28,7 @@ var findProtoTests = []struct {
 }{
 	{string(ProtoEncodingPrefix), true, string(ProtoEncodingPrefix)},
 	{fmt.Sprintf("xxxxxx%s...end", ProtoEncodingPrefix), true, fmt.Sprintf("%s...end", ProtoEncodingPrefix)},
-	{fmt.Sprintf("xxxxxx{}"), false, ""},
+	{"xxxxxx{}", false, ""},
 }
 
 func TestTryFindProto(t *testing.T) {

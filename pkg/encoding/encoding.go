@@ -250,7 +250,9 @@ func decodeTypeMeta(inMediaType string, in []byte) (*runtime.TypeMeta, error) {
 
 func typeMetaFromJson(in []byte) (*runtime.TypeMeta, error) {
 	var meta runtime.TypeMeta
-	json.Unmarshal(in, &meta)
+	if err := json.Unmarshal(in, &meta); err != nil {
+		return nil, err
+	}
 	return &meta, nil
 }
 
@@ -264,6 +266,8 @@ func typeMetaFromBinaryStorage(in []byte) (*runtime.TypeMeta, error) {
 
 func typeMetaFromYaml(in []byte) (*runtime.TypeMeta, error) {
 	var meta runtime.TypeMeta
-	yaml.Unmarshal(in, &meta)
+	if err := yaml.Unmarshal(in, &meta); err != nil {
+		return nil, err
+	}
 	return &meta, nil
 }

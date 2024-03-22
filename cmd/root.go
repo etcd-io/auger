@@ -23,8 +23,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cfgFile string
-
 var RootCmd = &cobra.Command{
 	Use:   "auger",
 	Short: "Inspect and analyze kubernetes storage data.",

@@ -18,7 +18,7 @@ package cmd
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
 	"os"
 	"regexp"
 	"strings"
@@ -87,7 +87,7 @@ func readTestFile(t *testing.T, filename string) []byte {
 	if err != nil {
 		t.Fatalf("failed to open test data file: %v", err)
 	}
-	in, err := ioutil.ReadAll(f)
+	in, err := io.ReadAll(f)
 	if err != nil {
 		t.Fatalf("failed to read test data file, %v", err)
 	}
