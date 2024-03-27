@@ -223,7 +223,7 @@ func newCodec(typeMeta *runtime.TypeMeta, mediaType string) (runtime.Codec, erro
 		}
 		info = mediaTypes[0]
 	}
-	cfactory := serializer.DirectCodecFactory{CodecFactory: Codecs}
+	cfactory := serializer.WithoutConversionCodecFactory{CodecFactory: Codecs}
 	gv, err := schema.ParseGroupVersion(typeMeta.APIVersion)
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse meta APIVersion '%s': %s", typeMeta.APIVersion, err)

@@ -24,11 +24,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/coreos/etcd/mvcc/mvccpb"
 	"github.com/etcd-io/auger/pkg/data"
 	"github.com/etcd-io/auger/pkg/encoding"
 	"github.com/google/safetext/yamltemplate"
 	"github.com/spf13/cobra"
+	"go.etcd.io/etcd/api/v3/mvccpb"
 )
 
 var (
