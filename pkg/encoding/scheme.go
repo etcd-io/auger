@@ -23,13 +23,15 @@ import (
 	admissionregistrationv1 "k8s.io/api/admissionregistration/v1"
 	admissionregistrationv1beta1 "k8s.io/api/admissionregistration/v1beta1"
 
-	apiserverinternal "k8s.io/api/apiserverinternal/v1alpha1"
+	apiserverinternalv1alpha1 "k8s.io/api/apiserverinternal/v1alpha1"
 
 	appsv1 "k8s.io/api/apps/v1"
 	appsv1beta1 "k8s.io/api/apps/v1beta1"
 	appsv1beta2 "k8s.io/api/apps/v1beta2"
+
 	authenticationv1 "k8s.io/api/authentication/v1"
 	authenticationv1beta1 "k8s.io/api/authentication/v1beta1"
+
 	authorizationv1 "k8s.io/api/authorization/v1"
 	authorizationv1beta1 "k8s.io/api/authorization/v1beta1"
 
@@ -64,6 +66,7 @@ import (
 	imagepolicyv1alpha1 "k8s.io/api/imagepolicy/v1alpha1"
 
 	networkingv1 "k8s.io/api/networking/v1"
+	networkingv1alpha1 "k8s.io/api/networking/v1alpha1"
 	networkingv1beta1 "k8s.io/api/networking/v1beta1"
 
 	nodev1 "k8s.io/api/node/v1"
@@ -84,6 +87,7 @@ import (
 	storagev1 "k8s.io/api/storage/v1"
 	storagev1alpha1 "k8s.io/api/storage/v1alpha1"
 	storagev1beta1 "k8s.io/api/storage/v1beta1"
+
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
@@ -121,13 +125,15 @@ func AddToScheme(scheme *runtime.Scheme) {
 	admissionregistrationv1.AddToScheme(scheme)
 	admissionregistrationv1beta1.AddToScheme(scheme)
 
-	apiserverinternal.AddToScheme(scheme)
+	apiserverinternalv1alpha1.AddToScheme(scheme)
 
 	appsv1.AddToScheme(scheme)
 	appsv1beta1.AddToScheme(scheme)
 	appsv1beta2.AddToScheme(scheme)
+
 	authenticationv1.AddToScheme(scheme)
 	authenticationv1beta1.AddToScheme(scheme)
+
 	authorizationv1.AddToScheme(scheme)
 	authorizationv1beta1.AddToScheme(scheme)
 
@@ -145,10 +151,10 @@ func AddToScheme(scheme *runtime.Scheme) {
 	coordinationv1beta1.AddToScheme(scheme)
 	coordinationv1.AddToScheme(scheme)
 
+	corev1.AddToScheme(scheme)
+
 	discoveryv1beta1.AddToScheme(scheme)
 	discoveryv1.AddToScheme(scheme)
-
-	corev1.AddToScheme(scheme)
 
 	eventsv1beta1.AddToScheme(scheme)
 	eventsv1.AddToScheme(scheme)
@@ -162,6 +168,7 @@ func AddToScheme(scheme *runtime.Scheme) {
 	imagepolicyv1alpha1.AddToScheme(scheme)
 
 	networkingv1.AddToScheme(scheme)
+	networkingv1alpha1.AddToScheme(scheme)
 	networkingv1beta1.AddToScheme(scheme)
 
 	nodev1alpha1.AddToScheme(scheme)
