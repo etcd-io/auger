@@ -26,9 +26,9 @@ import (
 	"strings"
 	"text/template"
 
-	bolt "github.com/coreos/bbolt"
-	"github.com/coreos/etcd/mvcc/mvccpb"
 	"github.com/etcd-io/auger/pkg/encoding"
+	bolt "go.etcd.io/bbolt"
+	"go.etcd.io/etcd/api/v3/mvccpb"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
