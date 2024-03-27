@@ -21,7 +21,10 @@ import (
 	admissionv1beta1 "k8s.io/api/admission/v1beta1"
 
 	admissionregistrationv1 "k8s.io/api/admissionregistration/v1"
+	admissionregistrationv1alpha1 "k8s.io/api/admissionregistration/v1alpha1"
 	admissionregistrationv1beta1 "k8s.io/api/admissionregistration/v1beta1"
+
+	apidiscoveryv2beta1 "k8s.io/api/apidiscovery/v2beta1"
 
 	apiserverinternalv1alpha1 "k8s.io/api/apiserverinternal/v1alpha1"
 
@@ -30,6 +33,7 @@ import (
 	appsv1beta2 "k8s.io/api/apps/v1beta2"
 
 	authenticationv1 "k8s.io/api/authentication/v1"
+	authenticationv1alpha1 "k8s.io/api/authentication/v1alpha1"
 	authenticationv1beta1 "k8s.io/api/authentication/v1beta1"
 
 	authorizationv1 "k8s.io/api/authorization/v1"
@@ -62,6 +66,7 @@ import (
 	flowcontrolv1alpha1 "k8s.io/api/flowcontrol/v1alpha1"
 	flowcontrolv1beta1 "k8s.io/api/flowcontrol/v1beta1"
 	flowcontrolv1beta2 "k8s.io/api/flowcontrol/v1beta2"
+	flowcontrolv1beta3 "k8s.io/api/flowcontrol/v1beta3"
 
 	imagepolicyv1alpha1 "k8s.io/api/imagepolicy/v1alpha1"
 
@@ -79,6 +84,8 @@ import (
 	rbacv1 "k8s.io/api/rbac/v1"
 	rbacv1alpha1 "k8s.io/api/rbac/v1alpha1"
 	rbacv1beta1 "k8s.io/api/rbac/v1beta1"
+
+	resourcev1alpha1 "k8s.io/api/resource/v1alpha1"
 
 	schedulingv1 "k8s.io/api/scheduling/v1"
 	schedulingv1alpha1 "k8s.io/api/scheduling/v1alpha1"
@@ -123,7 +130,10 @@ func AddToScheme(scheme *runtime.Scheme) {
 	admissionv1.AddToScheme(scheme)
 
 	admissionregistrationv1.AddToScheme(scheme)
+	admissionregistrationv1alpha1.AddToScheme(scheme)
 	admissionregistrationv1beta1.AddToScheme(scheme)
+
+	apidiscoveryv2beta1.AddToScheme(scheme)
 
 	apiserverinternalv1alpha1.AddToScheme(scheme)
 
@@ -132,6 +142,7 @@ func AddToScheme(scheme *runtime.Scheme) {
 	appsv1beta2.AddToScheme(scheme)
 
 	authenticationv1.AddToScheme(scheme)
+	authenticationv1alpha1.AddToScheme(scheme)
 	authenticationv1beta1.AddToScheme(scheme)
 
 	authorizationv1.AddToScheme(scheme)
@@ -164,6 +175,7 @@ func AddToScheme(scheme *runtime.Scheme) {
 	flowcontrolv1alpha1.AddToScheme(scheme)
 	flowcontrolv1beta1.AddToScheme(scheme)
 	flowcontrolv1beta2.AddToScheme(scheme)
+	flowcontrolv1beta3.AddToScheme(scheme)
 
 	imagepolicyv1alpha1.AddToScheme(scheme)
 
@@ -181,6 +193,8 @@ func AddToScheme(scheme *runtime.Scheme) {
 	rbacv1.AddToScheme(scheme)
 	rbacv1alpha1.AddToScheme(scheme)
 	rbacv1beta1.AddToScheme(scheme)
+
+	resourcev1alpha1.AddToScheme(scheme)
 
 	schedulingv1alpha1.AddToScheme(scheme)
 	schedulingv1beta1.AddToScheme(scheme)
