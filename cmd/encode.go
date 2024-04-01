@@ -22,6 +22,7 @@ import (
 	"os"
 
 	"github.com/etcd-io/auger/pkg/encoding"
+	"github.com/etcd-io/auger/pkg/scheme"
 	"github.com/spf13/cobra"
 )
 
@@ -80,6 +81,6 @@ func encodeValidateAndRun() error {
 
 // encodeRun runs the encode command.
 func encodeRun(inMediaType string, in []byte, out io.Writer) error {
-	_, err := encoding.Convert(inMediaType, encoding.StorageBinaryMediaType, in, out)
+	_, err := encoding.Convert(scheme.Codecs, inMediaType, encoding.StorageBinaryMediaType, in, out)
 	return err
 }

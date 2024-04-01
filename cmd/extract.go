@@ -27,6 +27,7 @@ import (
 	"github.com/coreos/etcd/mvcc/mvccpb"
 	"github.com/etcd-io/auger/pkg/data"
 	"github.com/etcd-io/auger/pkg/encoding"
+	"github.com/etcd-io/auger/pkg/scheme"
 	"github.com/google/safetext/yamltemplate"
 	"github.com/spf13/cobra"
 )
@@ -221,7 +222,7 @@ func printValue(filename string, key string, version string, raw bool, outMediaT
 		fmt.Fprintf(out, "%s\n", string(in))
 		return nil
 	}
-	_, err = encoding.DetectAndConvert(outMediaType, in, out)
+	_, err = encoding.DetectAndConvert(scheme.Codecs, outMediaType, in, out)
 	return err
 }
 
@@ -243,7 +244,7 @@ func printLeafItemSummary(kv *mvccpb.KeyValue, out io.Writer) error {
 
 // printLeafItemValue prints an etcd value for a given boltdb leaf item.
 func printLeafItemValue(kv *mvccpb.KeyValue, outMediaType string, out io.Writer) error {
-	_, err := encoding.DetectAndConvert(outMediaType, kv.Value, out)
+	_, err := encoding.DetectAndConvert(scheme.Codecs, outMediaType, kv.Value, out)
 	return err
 }
 
@@ -264,7 +265,7 @@ func printKeySummaries(filename string, keyPrefix string, revision int64, fields
 		}
 	}
 	proj := &data.KeySummaryProjection{HasKey: hasKey, HasValue: hasValue}
-	summaries, err := data.ListKeySummaries(filename, []data.Filter{data.NewPrefixFilter(keyPrefix)}, proj, revision)
+	summaries, err := data.ListKeySummaries(scheme.Codecs, filename, []data.Filter{data.NewPrefixFilter(keyPrefix)}, proj, revision)
 	if err != nil {
 		return err
 	}
@@ -300,7 +301,7 @@ func printTemplateSummaries(filename string, keyPrefix string, revision int64, t
 	}
 
 	// We don't have a simple way to determine if the template uses the key or value or not
-	summaries, err := data.ListKeySummaries(filename, append(filters, data.NewPrefixFilter(keyPrefix)), &data.KeySummaryProjection{HasKey: true, HasValue: true}, revision)
+	summaries, err := data.ListKeySummaries(scheme.Codecs, filename, append(filters, data.NewPrefixFilter(keyPrefix)), &data.KeySummaryProjection{HasKey: true, HasValue: true}, revision)
 	if err != nil {
 		return err
 	}

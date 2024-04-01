@@ -21,6 +21,7 @@ import (
 	"sort"
 
 	"github.com/etcd-io/auger/pkg/data"
+	"github.com/etcd-io/auger/pkg/scheme"
 	"github.com/spf13/cobra"
 )
 
@@ -44,7 +45,7 @@ func init() {
 }
 
 func analyzeValidateAndRun() error {
-	summaries, err := data.ListKeySummaries(analyzeOpts.filename, []data.Filter{}, &data.KeySummaryProjection{HasKey: true, HasValue: false}, 0)
+	summaries, err := data.ListKeySummaries(scheme.Codecs, analyzeOpts.filename, []data.Filter{}, &data.KeySummaryProjection{HasKey: true, HasValue: false}, 0)
 	if err != nil {
 		return err
 	}

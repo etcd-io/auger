@@ -60,17 +60,17 @@ func ToMediaType(out string) (string, error) {
 // DetectAndConvert first detects the media type of the in param data and then converts it from
 // the kv store encoded data to the given output format using kubernetes' api machinery to
 // perform the conversion.
-func DetectAndConvert(outMediaType string, in []byte, out io.Writer) (*runtime.TypeMeta, error) {
+func DetectAndConvert(codecs serializer.CodecFactory, outMediaType string, in []byte, out io.Writer) (*runtime.TypeMeta, error) {
 	inMediaType, in, err := DetectAndExtract(in)
 	if err != nil {
 		return nil, err
 	}
-	return Convert(inMediaType, outMediaType, in, out)
+	return Convert(codecs, inMediaType, outMediaType, in, out)
 }
 
 // Convert from kv store encoded data to the given output format using kubernetes' api machinery to
 // perform the conversion.
-func Convert(inMediaType, outMediaType string, in []byte, out io.Writer) (*runtime.TypeMeta, error) {
+func Convert(codecs serializer.CodecFactory, inMediaType, outMediaType string, in []byte, out io.Writer) (*runtime.TypeMeta, error) {
 	if inMediaType == StorageBinaryMediaType && outMediaType == ProtobufMediaType {
 		return nil, DecodeRaw(in, out)
 	}
@@ -92,11 +92,11 @@ func Convert(inMediaType, outMediaType string, in []byte, out io.Writer) (*runti
 			encoded = append(encoded, '\n')
 		}
 	} else {
-		inCodec, err := newCodec(typeMeta, inMediaType)
+		inCodec, err := newCodec(codecs, typeMeta, inMediaType)
 		if err != nil {
 			return nil, err
 		}
-		outCodec, err := newCodec(typeMeta, outMediaType)
+		outCodec, err := newCodec(codecs, typeMeta, outMediaType)
 		if err != nil {
 			return nil, err
 		}
@@ -209,12 +209,12 @@ func DecodeUnknown(in []byte) (*runtime.Unknown, error) {
 }
 
 // NewCodec creates a new kubernetes storage codec for encoding and decoding persisted data.
-func newCodec(typeMeta *runtime.TypeMeta, mediaType string) (runtime.Codec, error) {
+func newCodec(codecs serializer.CodecFactory, typeMeta *runtime.TypeMeta, mediaType string) (runtime.Codec, error) {
 	// For api machinery purposes, we treat StorageBinaryMediaType as ProtobufMediaType
 	if mediaType == StorageBinaryMediaType {
 		mediaType = ProtobufMediaType
 	}
-	mediaTypes := Codecs.SupportedMediaTypes()
+	mediaTypes := codecs.SupportedMediaTypes()
 
 	info, ok := runtime.SerializerInfoForMediaType(mediaTypes, mediaType)
 	if !ok {
@@ -223,14 +223,14 @@ func newCodec(typeMeta *runtime.TypeMeta, mediaType string) (runtime.Codec, erro
 		}
 		info = mediaTypes[0]
 	}
-	cfactory := serializer.DirectCodecFactory{CodecFactory: Codecs}
+
 	gv, err := schema.ParseGroupVersion(typeMeta.APIVersion)
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse meta APIVersion '%s': %s", typeMeta.APIVersion, err)
 	}
-	encoder := cfactory.EncoderForVersion(info.Serializer, gv)
-	decoder := cfactory.DecoderToVersion(info.Serializer, gv)
-	codec := cfactory.CodecForVersions(encoder, decoder, gv, gv)
+	encoder := codecs.EncoderForVersion(info.Serializer, gv)
+	decoder := codecs.DecoderToVersion(info.Serializer, gv)
+	codec := codecs.CodecForVersions(encoder, decoder, gv, gv)
 	return codec, nil
 }
 

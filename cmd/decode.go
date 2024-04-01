@@ -26,6 +26,7 @@ import (
 	"encoding/hex"
 
 	"github.com/etcd-io/auger/pkg/encoding"
+	"github.com/etcd-io/auger/pkg/scheme"
 	"github.com/spf13/cobra"
 )
 
@@ -151,7 +152,7 @@ func runInBatchMode(metaOnly bool, outMediaType string, out io.Writer) (err erro
 		}
 
 		buf := bytes.NewBufferString("")
-		_, err = encoding.Convert(inMediaType, outMediaType, decodedinput, buf)
+		_, err = encoding.Convert(scheme.Codecs, inMediaType, outMediaType, decodedinput, buf)
 		if err != nil {
 			fmt.Fprintf(out, "ERROR:%v|\n", err)
 		} else {
@@ -173,7 +174,7 @@ func run(metaOnly bool, outMediaType string, in []byte, out io.Writer) error {
 		return encoding.DecodeSummary(inMediaType, in, out)
 	}
 
-	_, err = encoding.Convert(inMediaType, outMediaType, in, out)
+	_, err = encoding.Convert(scheme.Codecs, inMediaType, outMediaType, in, out)
 	return err
 }
 

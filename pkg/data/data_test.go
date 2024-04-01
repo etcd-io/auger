@@ -18,6 +18,8 @@ package data
 
 import (
 	"testing"
+
+	"github.com/etcd-io/auger/pkg/scheme"
 )
 
 const (
@@ -84,7 +86,7 @@ func TestListKeySummariesFilters(t *testing.T) {
 				missingKeys[key] = struct{}{}
 			}
 			unexpectedKeys := map[string]struct{}{}
-			results, err := ListKeySummaries(tt.file, tt.filters, ProjectEverything, 0)
+			results, err := ListKeySummaries(scheme.Codecs, tt.file, tt.filters, ProjectEverything, 0)
 			if err != nil {
 				t.Fatal(err)
 			}
