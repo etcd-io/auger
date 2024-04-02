@@ -37,7 +37,7 @@ var (
 	keyBucket  = []byte("key")
 	metaBucket = []byte("meta")
 
-	finishedCompactKeyName  = []byte("finishedCompactRev")
+	finishedCompactKeyName = []byte("finishedCompactRev")
 )
 
 // KeySummary represents a kubernetes object stored in etcd.
