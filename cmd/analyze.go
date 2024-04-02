@@ -36,7 +36,7 @@ type analyzeOptions struct {
 	filename string
 }
 
-var analyzeOpts *analyzeOptions = &analyzeOptions{}
+var analyzeOpts = &analyzeOptions{}
 
 func init() {
 	RootCmd.AddCommand(analyzeCmd)
@@ -52,7 +52,7 @@ func analyzeValidateAndRun() error {
 	objectCounts := map[string]uint{}
 	for _, s := range summaries {
 		if s.TypeMeta != nil {
-			objectCounts[fmt.Sprintf("%s/%s", s.TypeMeta.APIVersion, s.TypeMeta.Kind)] += 1
+			objectCounts[fmt.Sprintf("%s/%s", s.TypeMeta.APIVersion, s.TypeMeta.Kind)]++
 		}
 	}
 

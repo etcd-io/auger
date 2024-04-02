@@ -114,22 +114,22 @@ func TestParseFilters(t *testing.T) {
 		{
 			name:      "namespace-equals",
 			rawFilter: ".Value.metadata.namespace=default",
-			expected:  []*FieldConstraint{&FieldConstraint{lhs: ".Value.metadata.namespace", op: Equals, rhs: "default"}},
+			expected:  []*FieldConstraint{{lhs: ".Value.metadata.namespace", op: Equals, rhs: "default"}},
 		},
 		{
 			name:      "2-filters",
 			rawFilter: ".Value.metadata.namespace=default,.Value.metadata.name=example",
 			expected: []*FieldConstraint{
-				&FieldConstraint{lhs: ".Value.metadata.namespace", op: Equals, rhs: "default"},
-				&FieldConstraint{lhs: ".Value.metadata.name", op: Equals, rhs: "example"},
+				{lhs: ".Value.metadata.namespace", op: Equals, rhs: "default"},
+				{lhs: ".Value.metadata.name", op: Equals, rhs: "example"},
 			},
 		},
 		{
 			name:      "whitespace",
 			rawFilter: " .Value.metadata.namespace=default\t, .Value.metadata.name=example\n",
 			expected: []*FieldConstraint{
-				&FieldConstraint{lhs: ".Value.metadata.namespace", op: Equals, rhs: "default"},
-				&FieldConstraint{lhs: ".Value.metadata.name", op: Equals, rhs: "example"},
+				{lhs: ".Value.metadata.namespace", op: Equals, rhs: "default"},
+				{lhs: ".Value.metadata.name", op: Equals, rhs: "example"},
 			},
 		},
 	}

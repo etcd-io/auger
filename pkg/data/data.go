@@ -37,7 +37,7 @@ var (
 	keyBucket  = []byte("key")
 	metaBucket = []byte("meta")
 
-	finishedCompactKeyName  = []byte("finishedCompactRev")
+	finishedCompactKeyName = []byte("finishedCompactRev")
 )
 
 // KeySummary represents a kubernetes object stored in etcd.
@@ -272,7 +272,7 @@ func ListKeySummaries(filename string, filters []Filter, proj *KeySummaryProject
 					ks.Version = kv.ModRevision
 					ks.Stats.ValueSize = len(kv.Value)
 				}
-				ks.Stats.VersionCount += 1
+				ks.Stats.VersionCount++
 				ks.Stats.AllVersionsKeySize += len(kv.Key)
 				ks.Stats.AllVersionsValueSize += len(kv.Value)
 			}

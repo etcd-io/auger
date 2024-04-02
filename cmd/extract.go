@@ -90,7 +90,7 @@ type extractOptions struct {
 	filter       string
 }
 
-var opts *extractOptions = &extractOptions{}
+var opts = &extractOptions{}
 
 func init() {
 	RootCmd.AddCommand(extractCmd)
@@ -250,7 +250,7 @@ func printLeafItemValue(kv *mvccpb.KeyValue, outMediaType string, out io.Writer)
 // printKeySummaries prints all keys in the db file with the given key prefix.
 func printKeySummaries(filename string, keyPrefix string, revision int64, fields []string, out io.Writer) error {
 	if len(fields) == 0 {
-		return fmt.Errorf("no fields provided, nothing to output.")
+		return fmt.Errorf("no fields provided, nothing to output")
 	}
 
 	var hasKey bool
@@ -288,7 +288,7 @@ func printTemplateSummaries(filename string, keyPrefix string, revision int64, t
 	}
 
 	if len(templatestr) == 0 {
-		return fmt.Errorf("no template provided, nothing to output.")
+		return fmt.Errorf("no template provided, nothing to output")
 	}
 
 	filters := []data.Filter{}
