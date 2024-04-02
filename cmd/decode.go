@@ -73,7 +73,7 @@ type decodeOptions struct {
 	batchProcess  bool // special flag to handle incoming etcd-dump-logs output
 }
 
-var options *decodeOptions = &decodeOptions{}
+var options = &decodeOptions{}
 
 func init() {
 	RootCmd.AddCommand(decodeCmd)
@@ -124,7 +124,7 @@ func runInBatchMode(metaOnly bool, outMediaType string, out io.Writer) (err erro
 			return nil
 		}
 		if err != nil {
-			return fmt.Errorf("error reading --batch-process input: %v\n", err)
+			return fmt.Errorf("error reading --batch-process input: %v", err)
 		}
 
 		input = stripNewline(input)
@@ -210,7 +210,6 @@ func readInput(inputFilename string) ([]byte, error) {
 func stripNewline(d []byte) []byte {
 	if len(d) > 0 && d[len(d)-1] == '\n' {
 		return d[:len(d)-1]
-	} else {
-		return d
 	}
+	return d
 }

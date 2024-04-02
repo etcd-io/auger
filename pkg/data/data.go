@@ -272,7 +272,7 @@ func ListKeySummaries(filename string, filters []Filter, proj *KeySummaryProject
 					ks.Version = kv.ModRevision
 					ks.Stats.ValueSize = len(kv.Value)
 				}
-				ks.Stats.VersionCount += 1
+				ks.Stats.VersionCount++
 				ks.Stats.AllVersionsKeySize += len(kv.Key)
 				ks.Stats.AllVersionsValueSize += len(kv.Value)
 			}

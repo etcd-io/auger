@@ -51,7 +51,7 @@ type encodeOptions struct {
 	inputFilename string
 }
 
-var encodeOpts *encodeOptions = &encodeOptions{}
+var encodeOpts = &encodeOptions{}
 
 func init() {
 	RootCmd.AddCommand(encodeCmd)

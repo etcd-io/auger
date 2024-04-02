@@ -31,7 +31,7 @@ fmt:
 
 .PHONY: verify
 verify:
-	golangci-lint run ./...
+	golangci-lint run --config tools/.golangci.yaml ./...
 
 # Local development build
 build:

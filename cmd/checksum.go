@@ -36,7 +36,7 @@ type checksumOptions struct {
 	revision int64
 }
 
-var checksumOpts *checksumOptions = &checksumOptions{}
+var checksumOpts = &checksumOptions{}
 
 func init() {
 	RootCmd.AddCommand(checksumCmd)
