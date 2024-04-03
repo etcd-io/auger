@@ -30,6 +30,7 @@ import (
 	"github.com/coreos/etcd/mvcc/mvccpb"
 	"github.com/etcd-io/auger/pkg/encoding"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/serializer"
 )
 
 // See etcd/mvcc/kvstore.go:keyBucketName
@@ -200,7 +201,7 @@ func getCompactRevision(db *bolt.DB) (int64, error) {
 }
 
 // ListKeySummaries returns a result set with all the provided filters and projections applied.
-func ListKeySummaries(filename string, filters []Filter, proj *KeySummaryProjection, revision int64) ([]*KeySummary, error) {
+func ListKeySummaries(codecs serializer.CodecFactory, filename string, filters []Filter, proj *KeySummaryProjection, revision int64) ([]*KeySummary, error) {
 	var err error
 	db, err := bolt.Open(filename, 0400, &bolt.Options{})
 	if err != nil {
@@ -231,7 +232,7 @@ func ListKeySummaries(filename string, filters []Filter, proj *KeySummaryProject
 				var valJson string
 				var typeMeta *runtime.TypeMeta
 				var err error
-				if typeMeta, err = encoding.DetectAndConvert(encoding.JsonMediaType, kv.Value, buf); err == nil {
+				if typeMeta, err = encoding.DetectAndConvert(codecs, encoding.JsonMediaType, kv.Value, buf); err == nil {
 					valJson = strings.TrimSpace(buf.String())
 				}
 				var key string
