@@ -1,6 +1,7 @@
 module github.com/etcd-io/auger
 
 go 1.21
+toolchain go1.22.2
 
 require (
 	github.com/coreos/bbolt v1.3.1-coreos.3
@@ -8,9 +9,9 @@ require (
 	github.com/google/safetext v0.0.0-20220914124124-e18e3fe012bf
 	github.com/spf13/cobra v1.8.0
 	gopkg.in/yaml.v2 v2.4.0
-	k8s.io/api v0.29.3
-	k8s.io/apimachinery v0.29.3
-	k8s.io/client-go v0.29.3
+	k8s.io/api v0.30.0
+	k8s.io/apimachinery v0.30.0
+	k8s.io/client-go v0.30.0
 )
 
 require (
