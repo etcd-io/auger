@@ -228,12 +228,12 @@ func ListKeySummaries(codecs serializer.CodecFactory, filename string, filters [
 		if prefixAllowed {
 			ks, ok := m[string(kv.Key)]
 			if !ok {
-				buf := new(bytes.Buffer)
+				var buf []byte
 				var valJson string
 				var typeMeta *runtime.TypeMeta
 				var err error
-				if typeMeta, err = encoding.DetectAndConvert(codecs, encoding.JsonMediaType, kv.Value, buf); err == nil {
-					valJson = strings.TrimSpace(buf.String())
+				if buf, typeMeta, err = encoding.DetectAndConvert(codecs, encoding.JsonMediaType, kv.Value); err == nil {
+					valJson = strings.TrimSpace(string(buf))
 				}
 				var key string
 				var value map[string]interface{}

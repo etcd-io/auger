@@ -151,12 +151,11 @@ func runInBatchMode(metaOnly bool, outMediaType string, out io.Writer) (err erro
 			continue
 		}
 
-		buf := bytes.NewBufferString("")
-		_, err = encoding.Convert(scheme.Codecs, inMediaType, outMediaType, decodedinput, buf)
+		buf, _, err := encoding.Convert(scheme.Codecs, inMediaType, outMediaType, decodedinput)
 		if err != nil {
 			fmt.Fprintf(out, "ERROR:%v|\n", err)
 		} else {
-			fmt.Fprintf(out, "OK|%s\n", buf.String())
+			fmt.Fprintf(out, "OK|%s\n", string(buf))
 		}
 
 		lineNum++
@@ -174,7 +173,12 @@ func run(metaOnly bool, outMediaType string, in []byte, out io.Writer) error {
 		return encoding.DecodeSummary(inMediaType, in, out)
 	}
 
-	_, err = encoding.Convert(scheme.Codecs, inMediaType, outMediaType, in, out)
+	buf, _, err := encoding.Convert(scheme.Codecs, inMediaType, outMediaType, in)
+	if err != nil {
+		return err
+	}
+
+	_, err = out.Write(buf)
 	return err
 }
 

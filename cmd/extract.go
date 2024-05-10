@@ -222,7 +222,11 @@ func printValue(filename string, key string, version string, raw bool, outMediaT
 		fmt.Fprintf(out, "%s\n", string(in))
 		return nil
 	}
-	_, err = encoding.DetectAndConvert(scheme.Codecs, outMediaType, in, out)
+	buf, _, err := encoding.DetectAndConvert(scheme.Codecs, outMediaType, in)
+	if err != nil {
+		return err
+	}
+	_, err = out.Write(buf)
 	return err
 }
 
@@ -244,7 +248,11 @@ func printLeafItemSummary(kv *mvccpb.KeyValue, out io.Writer) error {
 
 // printLeafItemValue prints an etcd value for a given boltdb leaf item.
 func printLeafItemValue(kv *mvccpb.KeyValue, outMediaType string, out io.Writer) error {
-	_, err := encoding.DetectAndConvert(scheme.Codecs, outMediaType, kv.Value, out)
+	buf, _, err := encoding.DetectAndConvert(scheme.Codecs, outMediaType, kv.Value)
+	if err != nil {
+		return err
+	}
+	_, err = out.Write(buf)
 	return err
 }
 

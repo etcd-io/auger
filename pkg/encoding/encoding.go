@@ -60,28 +60,32 @@ func ToMediaType(out string) (string, error) {
 // DetectAndConvert first detects the media type of the in param data and then converts it from
 // the kv store encoded data to the given output format using kubernetes' api machinery to
 // perform the conversion.
-func DetectAndConvert(codecs serializer.CodecFactory, outMediaType string, in []byte, out io.Writer) (*runtime.TypeMeta, error) {
+func DetectAndConvert(codecs serializer.CodecFactory, outMediaType string, in []byte) ([]byte, *runtime.TypeMeta, error) {
 	inMediaType, in, err := DetectAndExtract(in)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return Convert(codecs, inMediaType, outMediaType, in, out)
+	return Convert(codecs, inMediaType, outMediaType, in)
 }
 
 // Convert from kv store encoded data to the given output format using kubernetes' api machinery to
 // perform the conversion.
-func Convert(codecs serializer.CodecFactory, inMediaType, outMediaType string, in []byte, out io.Writer) (*runtime.TypeMeta, error) {
+func Convert(codecs serializer.CodecFactory, inMediaType, outMediaType string, in []byte) ([]byte, *runtime.TypeMeta, error) {
 	if inMediaType == StorageBinaryMediaType && outMediaType == ProtobufMediaType {
-		return nil, DecodeRaw(in, out)
+		unknown, err := DecodeUnknown(in)
+		if err != nil {
+			return nil, nil, err
+		}
+		return unknown.Raw, &unknown.TypeMeta, nil
 	}
 
 	if inMediaType == ProtobufMediaType && outMediaType == StorageBinaryMediaType {
-		return nil, fmt.Errorf("unsupported conversion: protobuf to kubernetes binary storage representation")
+		return nil, nil, fmt.Errorf("unsupported conversion: protobuf to kubernetes binary storage representation")
 	}
 
 	typeMeta, err := decodeTypeMeta(inMediaType, in)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	var encoded []byte
@@ -94,29 +98,25 @@ func Convert(codecs serializer.CodecFactory, inMediaType, outMediaType string, i
 	} else {
 		inCodec, err := newCodec(codecs, typeMeta, inMediaType)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		outCodec, err := newCodec(codecs, typeMeta, outMediaType)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		obj, err := runtime.Decode(inCodec, in)
 		if err != nil {
-			return nil, fmt.Errorf("error decoding from %s: %s", inMediaType, err)
+			return nil, nil, fmt.Errorf("error decoding from %s: %s", inMediaType, err)
 		}
 
 		encoded, err = runtime.Encode(outCodec, obj)
 		if err != nil {
-			return nil, fmt.Errorf("error encoding to %s: %s", outMediaType, err)
+			return nil, nil, fmt.Errorf("error encoding to %s: %s", outMediaType, err)
 		}
 	}
 
-	_, err = out.Write(encoded)
-	if err != nil {
-		return nil, err
-	}
-	return typeMeta, nil
+	return encoded, typeMeta, nil
 }
 
 // DetectAndExtract searches the the start of either json of protobuf data, and, if found, returns the mime type and data.
@@ -163,20 +163,6 @@ func tryFindJson(in []byte) (*json.RawMessage, bool) {
 		i = bytes.IndexAny(in, jsonStartChars)
 	}
 	return nil, false
-}
-
-// DecodeRaw decodes the raw payload bytes contained within the 'Unknown' protobuf envelope of
-// the given storage data.
-func DecodeRaw(in []byte, out io.Writer) error {
-	unknown, err := DecodeUnknown(in)
-	if err != nil {
-		return err
-	}
-	_, err = out.Write(unknown.Raw)
-	if err != nil {
-		return fmt.Errorf("failed to write output: %v", err)
-	}
-	return nil
 }
 
 // DecodeSummary decodes the TypeMeta, ContentEncoding and ContentType fields from the 'Unknown'
