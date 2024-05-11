@@ -5,6 +5,9 @@ approvers:
   - jmhbnz
   - wenjiaswe
 
+reviewers:
+  - wzshiming
+
 emeritus_approvers:
   - jpbetz
   - mml
