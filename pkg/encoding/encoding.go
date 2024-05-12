@@ -98,11 +98,11 @@ func Convert(codecs serializer.CodecFactory, inMediaType, outMediaType string, i
 	} else if inMediaType == JsonMediaType && outMediaType == YamlMediaType {
 		val := map[string]interface{}{}
 		if err := json.Unmarshal(in, &val); err != nil {
-			return nil, fmt.Errorf("error decoding from %s: %s", inMediaType, err)
+			return nil, nil, fmt.Errorf("error decoding from %s: %s", inMediaType, err)
 		}
 		encoded, err = yaml.Marshal(val)
 		if err != nil {
-			return nil, fmt.Errorf("error encoding from %s: %s", outMediaType, err)
+			return nil, nil, fmt.Errorf("error encoding from %s: %s", outMediaType, err)
 		}
 	} else {
 		inCodec, err := newCodec(codecs, typeMeta, inMediaType)
