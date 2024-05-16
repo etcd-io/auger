@@ -83,7 +83,7 @@ func Convert(codecs serializer.CodecFactory, inMediaType, outMediaType string, i
 		return nil, nil, fmt.Errorf("unsupported conversion: protobuf to kubernetes binary storage representation")
 	}
 
-	typeMeta, err := decodeTypeMeta(inMediaType, in)
+	typeMeta, err := DecodeTypeMeta(inMediaType, in)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -168,7 +168,7 @@ func tryFindJson(in []byte) (*json.RawMessage, bool) {
 // DecodeSummary decodes the TypeMeta, ContentEncoding and ContentType fields from the 'Unknown'
 // protobuf envelope of the given storage data.
 func DecodeSummary(inMediaType string, in []byte, out io.Writer) error {
-	typeMeta, err := decodeTypeMeta(inMediaType, in)
+	typeMeta, err := DecodeTypeMeta(inMediaType, in)
 	if err != nil {
 		return err
 	}
@@ -220,8 +220,8 @@ func newCodec(codecs serializer.CodecFactory, typeMeta *runtime.TypeMeta, mediaT
 	return codec, nil
 }
 
-// getTypeMeta gets the TypeMeta from the given data, either as JSON or Protobuf.
-func decodeTypeMeta(inMediaType string, in []byte) (*runtime.TypeMeta, error) {
+// DecodeTypeMeta gets the TypeMeta from the given data, either as JSON or Protobuf.
+func DecodeTypeMeta(inMediaType string, in []byte) (*runtime.TypeMeta, error) {
 	switch inMediaType {
 	case JsonMediaType:
 		return typeMetaFromJson(in)
