@@ -95,6 +95,15 @@ func Convert(codecs serializer.CodecFactory, inMediaType, outMediaType string, i
 		if outMediaType == JsonMediaType {
 			encoded = append(encoded, '\n')
 		}
+	} else if inMediaType == JsonMediaType && outMediaType == YamlMediaType {
+		val := map[string]interface{}{}
+		if err := json.Unmarshal(in, &val); err != nil {
+			return nil, nil, fmt.Errorf("error decoding from %s: %s", inMediaType, err)
+		}
+		encoded, err = yaml.Marshal(val)
+		if err != nil {
+			return nil, nil, fmt.Errorf("error encoding from %s: %s", outMediaType, err)
+		}
 	} else {
 		inCodec, err := newCodec(codecs, typeMeta, inMediaType)
 		if err != nil {
