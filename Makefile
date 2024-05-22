@@ -80,6 +80,7 @@ pkg/old/scheme/scheme.go: ./hack/gen_old_scheme.sh pkg/old/apis
 pkg/old/apis: ./hack/clone_old_apis.sh go.mod
 	-rm -rf ./pkg/old/apis/*
 	./hack/clone_old_apis.sh $(shell cat go.mod | grep 'k8s.io/api v0.' | awk '{print $$2}' | awk -F. '{print $$2}')
+	./scripts/fix.sh
 
 .PHONY: generate
 generate: pkg/scheme/scheme.go
