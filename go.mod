@@ -3,10 +3,10 @@ module github.com/etcd-io/auger
 go 1.22.0
 
 require (
-	github.com/coreos/bbolt v1.3.1-coreos.3
-	github.com/coreos/etcd v3.1.11+incompatible
 	github.com/google/safetext v0.0.0-20220914124124-e18e3fe012bf
 	github.com/spf13/cobra v1.8.0
+	go.etcd.io/bbolt v1.3.10
+	go.etcd.io/etcd/api/v3 v3.5.13
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.30.1
 	k8s.io/apimachinery v0.30.1

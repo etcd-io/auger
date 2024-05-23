@@ -26,11 +26,12 @@ import (
 	"strings"
 	"text/template"
 
-	bolt "github.com/coreos/bbolt"
-	"github.com/coreos/etcd/mvcc/mvccpb"
 	"github.com/etcd-io/auger/pkg/encoding"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
+
+	bolt "go.etcd.io/bbolt"
+	"go.etcd.io/etcd/api/v3/mvccpb"
 )
 
 // See etcd/mvcc/kvstore.go:keyBucketName
@@ -150,13 +151,19 @@ type Checksum struct {
 	CompactRevision int64
 }
 
+func boltOpen(path string) (*bolt.DB, error) {
+	return bolt.Open(path, 0400, &bolt.Options{
+		ReadOnly: true,
+	})
+}
+
 // HashByRevision returns the checksum and revision. The checksum is of the live keyspace at a
 // particular revision. It is equivalent to performing a range request of all key-value pairs can
 // computing a hash of the data. If revision is 0, the latest revision is checksumed, else revision
 // is checksumed.  The resulting hash is consistent particular revision in the presence of
 // compactions; so long as the revions itself has not been compacted, the hash never changes.
 func HashByRevision(filename string, revision int64) (Checksum, error) {
-	db, err := bolt.Open(filename, 0400, &bolt.Options{})
+	db, err := boltOpen(filename)
 	if err != nil {
 		return Checksum{}, err
 	}
@@ -203,7 +210,7 @@ func getCompactRevision(db *bolt.DB) (int64, error) {
 // ListKeySummaries returns a result set with all the provided filters and projections applied.
 func ListKeySummaries(codecs serializer.CodecFactory, filename string, filters []Filter, proj *KeySummaryProjection, revision int64) ([]*KeySummary, error) {
 	var err error
-	db, err := bolt.Open(filename, 0400, &bolt.Options{})
+	db, err := boltOpen(filename)
 	if err != nil {
 		return nil, err
 	}
@@ -304,7 +311,7 @@ func sortKeySummaries(m map[string]*KeySummary) []*KeySummary {
 
 // ListVersions lists all versions of a object with the given key.
 func ListVersions(filename string, key string) ([]int64, error) {
-	db, err := bolt.Open(filename, 0400, &bolt.Options{})
+	db, err := boltOpen(filename)
 	if err != nil {
 		return nil, err
 	}
@@ -327,7 +334,7 @@ func ListVersions(filename string, key string) ([]int64, error) {
 // GetValue scans the bucket of the bolt db file for a etcd v3 record with the given key and returns the value.
 // Because bolt db files are indexed by revision
 func GetValue(filename string, key string, version int64) ([]byte, error) {
-	db, err := bolt.Open(filename, 0400, &bolt.Options{})
+	db, err := boltOpen(filename)
 	if err != nil {
 		return nil, err
 	}
