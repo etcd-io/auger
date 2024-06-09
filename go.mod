@@ -1,6 +1,6 @@
 module github.com/etcd-io/auger
 
-go 1.22.0
+go 1.22.4
 
 require (
 	github.com/google/safetext v0.0.0-20220914124124-e18e3fe012bf
