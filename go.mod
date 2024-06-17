@@ -9,7 +9,7 @@ require (
 	go.etcd.io/etcd/api/v3 v3.5.14
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.30.1
-	k8s.io/apimachinery v0.30.1
+	k8s.io/apimachinery v0.30.2
 	k8s.io/client-go v0.30.1
 )
 
