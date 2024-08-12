@@ -1,5 +1,4 @@
-Auger
------
+# Auger
 
 Directly access data objects stored in `etcd` by `kubernetes`.
 
@@ -9,8 +8,7 @@ store data to `etcd`. Supports data conversion to `YAML`, `JSON` and `Protobuf`.
 Automatically determines if etcd data is stored in `JSON` (`kubernetes` `1.5` and
 earlier) or binary (`kubernetes` `1.6` and newer) and decodes accordingly.
 
-Why?
-----
+## Why?
 
 In earlier versions of `kubernetes`, data written to `etcd` was stored as `JSON`
 and could easily be inspected or manipulated using standard tools such as
@@ -21,8 +19,7 @@ contains a enveloped payload that must be unpacked, type resolved and decoded.
 This tool provides `kubernetes` developers and cluster operators with simple way
 to access the binary storage data via `YAML` and `JSON`.
 
-Installation
-------------
+## Installation
 
 Check out and build:
 
@@ -34,13 +31,11 @@ make release
 
 Run:
 
-
 ```sh
 build/auger -h
 ```
 
-Use cases
----------
+## Use cases
 
 ### Access data via etcdctl
 
@@ -119,11 +114,3 @@ auger checksum -f <member-3-boltdb-file> -r 7
 > revision: 7
 # Oh noes! The checksum should have been the same!
 ```
-
-TODO
-----
-
-- [ ] Warn if attempting to read data written by a different version of kubernetes
-- [ ] Add detection of unrecognized fields in stored data, which would suggest
-      data was written with newer version of proto schema
-- [ ] Build and publish releases for all recent kubernetes versions (1.6+)
