@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM docker.io/golang@sha256:58e52f6ddd39098d23b1a34ec24024acd5fe182245960afe572d83c313aafbed
+FROM docker.io/golang@sha256:2bd56f00ff47baf33e64eae7996b65846c7cb5e0a46e0a882ef179fd89654afa
 
 RUN apk add --no-cache curl git make && rm -rf /var/cache/apk/*
 
