@@ -114,10 +114,3 @@ auger checksum -f <member-3-boltdb-file> -r 7
 > revision: 7
 # Oh noes! The checksum should have been the same!
 ```
-
-## TODO
-
-- [ ] Warn if attempting to read data written by a different version of kubernetes
-- [ ] Add detection of unrecognized fields in stored data, which would suggest
-      data was written with newer version of proto schema
-- [ ] Build and publish releases for all recent kubernetes versions (1.6+)
