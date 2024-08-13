@@ -31,6 +31,9 @@ type Client interface {
 	// Get is a method that retrieves a key-value pair from the etcd server.
 	// It returns the revision of the key-value pair
 	Get(ctx context.Context, prefix string, opOpts ...OpOption) (rev int64, err error)
+
+	// Watch is a method that watches for changes to a key-value pair on the etcd server.
+	Watch(ctx context.Context, prefix string, opOpts ...OpOption) error
 }
 
 // client is the etcd client.
@@ -89,6 +92,13 @@ func WithChunkSize(chunkSize int64) OpOption {
 	}
 }
 
+// WithRevision sets the revision for the target.
+func WithRevision(revision int64) OpOption {
+	return func(o *op) {
+		o.revision = revision
+	}
+}
+
 func opOption(opts []OpOption) op {
 	var opt op
 	for _, o := range opts {
@@ -101,6 +111,8 @@ func opOption(opts []OpOption) op {
 type KeyValue struct {
 	Key   []byte
 	Value []byte
+
+	PrevValue []byte
 }
 
 func iterateList(kvs []*mvccpb.KeyValue, callback func(kv *KeyValue) error) error {
