@@ -84,7 +84,7 @@ func newCtlGetCommand(f *flagpole) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&flags.Output, "output", "o", "yaml", "output format. One of: (yaml).")
+	cmd.Flags().StringVarP(&flags.Output, "output", "o", "yaml", "output format. One of: (yaml, json).")
 	cmd.Flags().StringVarP(&flags.Namespace, "namespace", "n", "", "namespace of resource")
 	cmd.Flags().Int64Var(&flags.ChunkSize, "chunk-size", 500, "chunk size of the list pager")
 	cmd.Flags().StringVar(&flags.Prefix, "prefix", "/registry", "prefix to prepend to the resource")

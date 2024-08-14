@@ -17,8 +17,6 @@ limitations under the License.
 package command
 
 import (
-	"errors"
-	"fmt"
 	"io"
 
 	"github.com/etcd-io/auger/pkg/client"
@@ -26,39 +24,21 @@ import (
 	"github.com/etcd-io/auger/pkg/scheme"
 )
 
-type Printer interface {
-	Print(kv *client.KeyValue) error
+type jsonPrinter struct {
+	w io.Writer
 }
 
-func NewPrinter(w io.Writer, printerType string) Printer {
-	switch printerType {
-	case "yaml":
-		return &yamlPrinter{w: w}
-	case "json":
-		return &jsonPrinter{w: w}
-	}
-	return nil
-}
-
-func formatResponse(w io.Writer, outMediaType string, kv *client.KeyValue) error {
+func (p *jsonPrinter) Print(kv *client.KeyValue) error {
 	value := kv.Value
 	inMediaType, _, err := encoding.DetectAndExtract(value)
 	if err != nil {
-		_, err0 := fmt.Fprintf(w, "---\n# %s | raw | %v\n# %s\n", kv.Key, err, value)
-		if err0 != nil {
-			return errors.Join(err, err0)
-		}
-		return nil
+		return err
 	}
-	data, _, err := encoding.Convert(scheme.Codecs, inMediaType, outMediaType, value)
+	data, _, err := encoding.Convert(scheme.Codecs, inMediaType, encoding.JsonMediaType, value)
 	if err != nil {
-		_, err0 := fmt.Fprintf(w, "---\n# %s | raw | %v\n# %s\n", kv.Key, err, value)
-		if err0 != nil {
-			return errors.Join(err, err0)
-		}
-		return nil
+		return err
 	}
-	_, err = fmt.Fprintf(w, "---\n# %s | %s\n%s\n", kv.Key, inMediaType, data)
+	_, err = p.w.Write(data)
 	if err != nil {
 		return err
 	}
