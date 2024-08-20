@@ -36,7 +36,7 @@ verify:
 # Local development build
 build:
 	@mkdir -p build
-	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o build/$(NAME)
+	GOOS=$(GOOS) CGO_ENABLED=0 GOARCH=$(GOARCH) go build -o build/$(NAME)
 	@echo build/$(NAME) built!
 
 # Local development test
@@ -55,7 +55,7 @@ release:
 		-v $(TEMP_DIR)/$(NAME):/go/src/$(PKG) \
 		-w /go/src/$(PKG) \
 		golang:$(GO_VERSION) \
-		/bin/bash -c "make -f /go/src/$(PKG)/Makefile release-docker-build GOARCH=$(GOARCH) GOOS=$(GOOS)"
+		/bin/bash -c "make -f /go/src/$(PKG)/Makefile release-docker-build CGO_ENABLED=0 GOARCH=$(GOARCH) GOOS=$(GOOS)"
 	@mkdir -p build
 	@cp $(TEMP_DIR)/$(NAME)/$(NAME) build/$(NAME)
 	@echo build/$(NAME) built!
