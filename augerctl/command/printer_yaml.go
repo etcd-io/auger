@@ -17,10 +17,13 @@ limitations under the License.
 package command
 
 import (
+	"errors"
+	"fmt"
 	"io"
 
 	"github.com/etcd-io/auger/pkg/client"
 	"github.com/etcd-io/auger/pkg/encoding"
+	"github.com/etcd-io/auger/pkg/scheme"
 )
 
 type yamlPrinter struct {
@@ -28,5 +31,26 @@ type yamlPrinter struct {
 }
 
 func (p *yamlPrinter) Print(kv *client.KeyValue) error {
-	return formatResponse(p.w, encoding.YamlMediaType, kv)
+	value := kv.Value
+	inMediaType, _, err := encoding.DetectAndExtract(value)
+	if err != nil {
+		_, err0 := fmt.Fprintf(p.w, "---\n# %s | raw | %v\n# %s\n", kv.Key, err, value)
+		if err0 != nil {
+			return errors.Join(err, err0)
+		}
+		return nil
+	}
+	data, _, err := encoding.Convert(scheme.Codecs, inMediaType, encoding.YamlMediaType, value)
+	if err != nil {
+		_, err0 := fmt.Fprintf(p.w, "---\n# %s | raw | %v\n# %s\n", kv.Key, err, value)
+		if err0 != nil {
+			return errors.Join(err, err0)
+		}
+		return nil
+	}
+	_, err = fmt.Fprintf(p.w, "---\n# %s | %s\n%s\n", kv.Key, inMediaType, data)
+	if err != nil {
+		return err
+	}
+	return nil
 }

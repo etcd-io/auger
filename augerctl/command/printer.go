@@ -17,13 +17,9 @@ limitations under the License.
 package command
 
 import (
-	"errors"
-	"fmt"
 	"io"
 
 	"github.com/etcd-io/auger/pkg/client"
-	"github.com/etcd-io/auger/pkg/encoding"
-	"github.com/etcd-io/auger/pkg/scheme"
 )
 
 type Printer interface {
@@ -36,31 +32,6 @@ func NewPrinter(w io.Writer, printerType string) Printer {
 		return &yamlPrinter{w: w}
 	case "json":
 		return &jsonPrinter{w: w}
-	}
-	return nil
-}
-
-func formatResponse(w io.Writer, outMediaType string, kv *client.KeyValue) error {
-	value := kv.Value
-	inMediaType, _, err := encoding.DetectAndExtract(value)
-	if err != nil {
-		_, err0 := fmt.Fprintf(w, "---\n# %s | raw | %v\n# %s\n", kv.Key, err, value)
-		if err0 != nil {
-			return errors.Join(err, err0)
-		}
-		return nil
-	}
-	data, _, err := encoding.Convert(scheme.Codecs, inMediaType, outMediaType, value)
-	if err != nil {
-		_, err0 := fmt.Fprintf(w, "---\n# %s | raw | %v\n# %s\n", kv.Key, err, value)
-		if err0 != nil {
-			return errors.Join(err, err0)
-		}
-		return nil
-	}
-	_, err = fmt.Fprintf(w, "---\n# %s | %s\n%s\n", kv.Key, inMediaType, data)
-	if err != nil {
-		return err
 	}
 	return nil
 }
