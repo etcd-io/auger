@@ -20,6 +20,7 @@ GOOS ?= linux
 GOARCH ?= amd64
 TEMP_DIR := $(shell mktemp -d)
 GOFILES = $(shell find . -name \*.go)
+CGO_ENABLED ?= 0
 
 .PHONY: fmt
 fmt:
@@ -36,7 +37,7 @@ verify:
 # Local development build
 build:
 	@mkdir -p build
-	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o build/$(NAME)
+	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) go build -o build/$(NAME)
 	@echo build/$(NAME) built!
 
 # Local development test
@@ -63,7 +64,7 @@ release:
 # Build used inside docker by 'release'
 release-docker-build:
 	export GOPATH=/go
-	GOOS=$(GOOS) GOARCH=$(GOARCH) GO111MODULE=on go build
+	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) GO111MODULE=on go build
 
 clean:
 	rm -rf build
