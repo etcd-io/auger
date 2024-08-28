@@ -56,7 +56,7 @@ release:
 		-v $(TEMP_DIR)/$(NAME):/go/src/$(PKG) \
 		-w /go/src/$(PKG) \
 		golang:$(GO_VERSION) \
-		/bin/bash -c "make -f /go/src/$(PKG)/Makefile release-docker-build GOARCH=$(GOARCH) GOOS=$(GOOS)"
+		/bin/bash -c "make -f /go/src/$(PKG)/Makefile release-docker-build GOARCH=$(GOARCH) GOOS=$(GOOS) CGO_ENABLED=$(CGO_ENABLED)"
 	@mkdir -p build
 	@cp $(TEMP_DIR)/$(NAME)/$(NAME) build/$(NAME)
 	@echo build/$(NAME) built!
