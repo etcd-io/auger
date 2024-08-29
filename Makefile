@@ -74,7 +74,22 @@ pkg/scheme/scheme.go: ./hack/gen_scheme.sh go.mod
 	-rm ./pkg/scheme/scheme.go
 	./hack/gen_scheme.sh > ./pkg/scheme/scheme.go
 
+pkg/wellknown/resources.go: ./hack/gen_wellknown_resources
+	KWOK_KUBE_VERSION=1.31.0 kwokctl create cluster --name auger-wellknown \
+		--kube-apiserver-insecure-port 8080 \
+		--runtime binary \
+		--disable-kube-controller-manager \
+		--disable-kube-scheduler \
+		--kubeconfig ./auger-wellknown.kubeconfig
+	-rm pkg/wellknown/resources.go
+	go run ./hack/gen_wellknown_resources ./auger-wellknown.kubeconfig > pkg/wellknown/resources.go
+	kwokctl delete cluster --name auger-wellknown \
+		--kubeconfig ./auger-wellknown.kubeconfig
+	rm ./auger-wellknown.kubeconfig
+
 .PHONY: generate
-generate: pkg/scheme/scheme.go
+generate: \
+	pkg/scheme/scheme.go \
+	pkg/wellknown/resources.go
 
 .PHONY: build test release release-docker-build clean

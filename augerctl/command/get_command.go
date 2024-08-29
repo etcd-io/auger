@@ -22,6 +22,7 @@ import (
 	"os"
 
 	"github.com/etcd-io/auger/pkg/client"
+	"github.com/etcd-io/auger/pkg/wellknown"
 	"github.com/spf13/cobra"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
@@ -31,14 +32,16 @@ type getFlagpole struct {
 	Output    string
 	ChunkSize int64
 	Prefix    string
+
+	AllNamespace bool
 }
 
 var (
 	getExample = `
   # List a single service with namespace "default" and name "kubernetes"
-  augerctl get services -n default kubernetes
+  augerctl get svc -n default kubernetes
   # Nearly equivalent
-  kubectl get services -n default kubernetes -o yaml
+  kubectl get svc -n default kubernetes -o yaml
 
   # List a single resource of type "priorityclasses" and name "system-node-critical" without namespaced
   augerctl get priorityclasses system-node-critical
@@ -88,6 +91,7 @@ func newCtlGetCommand(f *flagpole) *cobra.Command {
 	cmd.Flags().StringVarP(&flags.Namespace, "namespace", "n", "", "namespace of resource")
 	cmd.Flags().Int64Var(&flags.ChunkSize, "chunk-size", 500, "chunk size of the list pager")
 	cmd.Flags().StringVar(&flags.Prefix, "prefix", "/registry", "prefix to prepend to the resource")
+	cmd.Flags().BoolVarP(&flags.AllNamespace, "all-namespace", "A", false, "if present, list the requested object(s) across all namespaces")
 
 	return cmd
 }
@@ -97,7 +101,7 @@ func getCommand(ctx context.Context, etcdclient client.Client, flags *getFlagpol
 	var targetName string
 	var targetNamespace string
 	if len(args) != 0 {
-		// TODO: Support get information from CRD and scheme.Codecs
+		// TODO: Support get information from CRD
 		//       Support short name
 		//       Check for namespaced
 
@@ -110,6 +114,16 @@ func getCommand(ctx context.Context, etcdclient client.Client, flags *getFlagpol
 		if len(args) >= 2 {
 			targetName = args[1]
 		}
+
+		if correctGr, namespaced, found := wellknown.CorrectGroupResource(gr); found {
+			targetGr = correctGr
+			if !namespaced || flags.AllNamespace {
+				targetNamespace = ""
+			} else if flags.Namespace == "" {
+				targetNamespace = "default"
+			}
+		}
+
 	}
 
 	printer := NewPrinter(os.Stdout, flags.Output)

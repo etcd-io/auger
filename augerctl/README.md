@@ -62,10 +62,10 @@ TODO
 List a single service with namespace `default` and name `kubernetes`
 
 ``` bash
-augerctl get services -n default kubernetes
+augerctl get svc -n default kubernetes
 
 # Nearly equivalent
-kubectl get services -n default kubernetes -o yaml
+kubectl get svc -n default kubernetes -o yaml
 ```
 
 List a single resource of type `priorityclasses` and name `system-node-critical` without namespaced
