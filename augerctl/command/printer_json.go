@@ -20,18 +20,27 @@ import (
 	"io"
 
 	"github.com/etcd-io/auger/pkg/client"
+	"github.com/etcd-io/auger/pkg/encoding"
+	"github.com/etcd-io/auger/pkg/scheme"
 )
 
-type Printer interface {
-	Print(kv *client.KeyValue) error
+type jsonPrinter struct {
+	w io.Writer
 }
 
-func NewPrinter(w io.Writer, printerType string) Printer {
-	switch printerType {
-	case "yaml":
-		return &yamlPrinter{w: w}
-	case "json":
-		return &jsonPrinter{w: w}
+func (p *jsonPrinter) Print(kv *client.KeyValue) error {
+	value := kv.Value
+	inMediaType, _, err := encoding.DetectAndExtract(value)
+	if err != nil {
+		return err
+	}
+	data, _, err := encoding.Convert(scheme.Codecs, inMediaType, encoding.JsonMediaType, value)
+	if err != nil {
+		return err
+	}
+	_, err = p.w.Write(data)
+	if err != nil {
+		return err
 	}
 	return nil
 }
