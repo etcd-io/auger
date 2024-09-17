@@ -38,6 +38,7 @@ verify:
 build:
 	@mkdir -p build
 	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) go build -o build/$(NAME)
+	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) go build -o build/augerctl ./augerctl
 	@echo build/$(NAME) built!
 
 # Local development test
