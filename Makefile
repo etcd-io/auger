@@ -50,7 +50,7 @@ build:
 
 # Local development test
 # `go test` automatically manages the build, so no need to depend on the build target here in make
-test:
+test: build
 	@echo Vetting
 	go vet ./...
 	@echo Testing
@@ -68,3 +68,7 @@ pkg/scheme/scheme.go: ./hack/gen_scheme.sh go.mod
 generate: pkg/scheme/scheme.go
 
 .PHONY: build test clean
+
+test-e2e: build
+	@echo "Running e2e tests"
+	go test ./tests/e2e/...
