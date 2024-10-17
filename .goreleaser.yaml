@@ -1,0 +1,70 @@
+# SPDX-License-Identifier: MIT
+version: 2
+project_name: auger
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - id: auger
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/etcd-id/auger/cmd.appVersion={{.Version}}
+      - -X github.com/etcd-id/auger/cmd.buildDate={{.Date}}
+      - -X github.com/etcd-id/auger/cmd.gitCommit={{.Commit}}
+    main: ./main.go
+    binary: auger
+  - id: augerctl
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/etcd-id/auger/command.appVersion={{.Version}}
+      - -X github.com/etcd-id/auger/command.buildDate={{.Date}}
+      - -X github.com/etcd-id/auger/command.gitCommit={{.Commit}}
+    main: ./augerctl/main.go
+    binary: augerctl
+
+archives:
+  - builds:
+      - auger
+      - augerctl
+
+checksum:
+  name_template: "checksums.txt"
+changelog:
+  sort: asc
+  use: github
+  groups:
+    - title: "✨ Features"
+      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
+      order: 0
+    - title: "🐛 Bug fixes"
+      regexp: '^.*?fix(\([[:word:]]+\))??!?:.+$'
+      order: 1
+    - title: "📚 Documentation"
+      regexp: '^.*?docs(\([[:word:]]+\))??!?:.+$'
+      order: 2
+    - title: "🌱 Others"
+      order: 999
+  filters:
+    exclude:
+      - "^test:"
+release:
+  github:
+    owner: etcd-io
+    name: auger
+  prerelease: auto

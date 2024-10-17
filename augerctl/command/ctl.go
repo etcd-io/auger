@@ -55,5 +55,6 @@ func NewCtlCommand() *cobra.Command {
 	cmd.AddCommand(
 		newCtlGetCommand(flags),
 	)
+	cmd.AddCommand(versionCmd)
 	return cmd
 }
