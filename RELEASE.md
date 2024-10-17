@@ -2,7 +2,6 @@
 
 The Auger Project is released on an as-needed basis. The process is as follows:
 
-1. An issue is proposing a new release with a changelog since the last release
-1. A quorum of [OWNERS](OWNERS) must LGTM this release
-1. An OWNER runs `git tag -s $VERSION` and inserts the changelog and pushes the tag with `git push $VERSION`
-1. The release issue is closed
+1. Create a new git tag with `git tag -s $VERSION`
+1. Push the tag with `git push $VERSION`
+1. Once pushed, the [github workflow](.github/workflows/release.yaml) will automatically create a new release with the tag and changelog.
