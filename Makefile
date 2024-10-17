@@ -22,52 +22,42 @@ TEMP_DIR := $(shell mktemp -d)
 GOFILES = $(shell find . -name \*.go)
 CGO_ENABLED ?= 0
 
+.PHONY: help
+help: ## Display this help.
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+
+##@ Development
+
 .PHONY: fmt
-fmt:
+fmt: ## Run go fmt against code.
 	@echo "Verifying gofmt, failures can be fixed with ./scripts/fix.sh"
 	@!(gofmt -l -s -d ${GOFILES} | grep '[a-z]')
 
 	@echo "Verifying goimports, failures can be fixed with ./scripts/fix.sh"
 	@!(go run golang.org/x/tools/cmd/goimports@latest -l -d ${GOFILES} | grep '[a-z]')
 
+##@ Lint / Verify
 .PHONY: verify
 verify:
 	golangci-lint run --config tools/.golangci.yaml ./...
 
+##@ Build
+
 # Local development build
-build:
+.PHONY: build
+build: ## local build 
 	@mkdir -p build
 	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) go build -o build/$(NAME)
 	@echo build/$(NAME) built!
 
 # Local development test
 # `go test` automatically manages the build, so no need to depend on the build target here in make
-test:
+.PHONY: test
+test: ## Run go test
 	@echo Vetting
 	go vet ./...
 	@echo Testing
 	go test ./...
-
-# Dockerized build
-release:
-	@cp -r $(CURDIR) $(TEMP_DIR)
-	@echo Building release in temp directory $(TEMP_DIR)
-	docker run \
-		-v $(TEMP_DIR)/$(NAME):/go/src/$(PKG) \
-		-w /go/src/$(PKG) \
-		golang:$(GO_VERSION) \
-		/bin/bash -c "make -f /go/src/$(PKG)/Makefile release-docker-build GOARCH=$(GOARCH) GOOS=$(GOOS) CGO_ENABLED=$(CGO_ENABLED)"
-	@mkdir -p build
-	@cp $(TEMP_DIR)/$(NAME)/$(NAME) build/$(NAME)
-	@echo build/$(NAME) built!
-
-# Build used inside docker by 'release'
-release-docker-build:
-	export GOPATH=/go
-	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) GO111MODULE=on go build
-
-clean:
-	rm -rf build
 
 pkg/scheme/scheme.go: ./hack/gen_scheme.sh go.mod
 	go mod vendor
@@ -75,6 +65,4 @@ pkg/scheme/scheme.go: ./hack/gen_scheme.sh go.mod
 	./hack/gen_scheme.sh > ./pkg/scheme/scheme.go
 
 .PHONY: generate
-generate: pkg/scheme/scheme.go
-
-.PHONY: build test release release-docker-build clean
+generate: pkg/scheme/scheme.go ## Generate code
