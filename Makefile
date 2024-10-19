@@ -15,7 +15,7 @@
 
 NAME ?= auger
 PKG ?= github.com/etcd-io/$(NAME)
-GO_VERSION ?= 1.23.1
+GO_VERSION ?= 1.23.2
 GOOS ?= linux
 GOARCH ?= amd64
 TEMP_DIR := $(shell mktemp -d)
