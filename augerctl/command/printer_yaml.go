@@ -32,6 +32,9 @@ type yamlPrinter struct {
 
 func (p *yamlPrinter) Print(kv *client.KeyValue) error {
 	value := kv.Value
+	if value == nil {
+		value = kv.PrevValue
+	}
 	inMediaType, _, err := encoding.DetectAndExtract(value)
 	if err != nil {
 		_, err0 := fmt.Fprintf(p.w, "---\n# %s | raw | %v\n# %s\n", kv.Key, err, value)
