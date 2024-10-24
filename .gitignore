@@ -18,3 +18,5 @@ vendor
 *.dylib
 coverage.html
 .glide/
+# goreleaser builds
+dist/
