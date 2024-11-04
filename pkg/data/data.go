@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"hash/crc32"
+	"os"
 	"sort"
 	"strings"
 	"text/template"
@@ -151,7 +152,15 @@ type Checksum struct {
 	CompactRevision int64
 }
 
+// boltOpen checks if the file exists and opens it in read-only mode.
+// Returns an error if the file does not exist.
 func boltOpen(path string) (*bolt.DB, error) {
+	// Check if the file exists
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return nil, fmt.Errorf("file does not exist: %s", path)
+	}
+
+	// Open the file in read-only mode
 	return bolt.Open(path, 0400, &bolt.Options{
 		ReadOnly: true,
 	})
