@@ -14,11 +14,8 @@
 # limitations under the License.
 
 NAME ?= auger
-PKG ?= github.com/etcd-io/$(NAME)
-GO_VERSION ?= 1.23.3
 GOOS ?= linux
 GOARCH ?= amd64
-TEMP_DIR := $(shell mktemp -d)
 GOFILES = $(shell find . -name \*.go)
 CGO_ENABLED ?= 0
 
@@ -48,24 +45,6 @@ test:
 	@echo Testing
 	go test ./...
 
-# Dockerized build
-release:
-	@cp -r $(CURDIR) $(TEMP_DIR)
-	@echo Building release in temp directory $(TEMP_DIR)
-	docker run \
-		-v $(TEMP_DIR)/$(NAME):/go/src/$(PKG) \
-		-w /go/src/$(PKG) \
-		golang:$(GO_VERSION) \
-		/bin/bash -c "make -f /go/src/$(PKG)/Makefile release-docker-build GOARCH=$(GOARCH) GOOS=$(GOOS) CGO_ENABLED=$(CGO_ENABLED)"
-	@mkdir -p build
-	@cp $(TEMP_DIR)/$(NAME)/$(NAME) build/$(NAME)
-	@echo build/$(NAME) built!
-
-# Build used inside docker by 'release'
-release-docker-build:
-	export GOPATH=/go
-	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) GO111MODULE=on go build
-
 clean:
 	rm -rf build
 
@@ -77,4 +56,4 @@ pkg/scheme/scheme.go: ./hack/gen_scheme.sh go.mod
 .PHONY: generate
 generate: pkg/scheme/scheme.go
 
-.PHONY: build test release release-docker-build clean
+.PHONY: build test clean
