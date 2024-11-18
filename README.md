@@ -26,7 +26,7 @@ Check out and build:
 ```sh
 git clone https://github.com/etcd-io/auger
 cd auger
-make release
+make build
 ```
 
 Run:
