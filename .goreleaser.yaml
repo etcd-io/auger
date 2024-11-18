@@ -16,9 +16,9 @@ builds:
       - arm64
     ldflags:
       - -s -w
-      - -X github.com/etcd-id/auger/cmd.appVersion={{.Version}}
-      - -X github.com/etcd-id/auger/cmd.buildDate={{.Date}}
-      - -X github.com/etcd-id/auger/cmd.gitCommit={{.Commit}}
+      - -X github.com/etcd-io/auger/cmd.appVersion={{.Version}}
+      - -X github.com/etcd-io/auger/cmd.buildDate={{.Date}}
+      - -X github.com/etcd-io/auger/cmd.gitCommit={{.Commit}}
     main: ./main.go
     binary: auger
   - id: augerctl
@@ -32,9 +32,9 @@ builds:
       - arm64
     ldflags:
       - -s -w
-      - -X github.com/etcd-id/auger/command.appVersion={{.Version}}
-      - -X github.com/etcd-id/auger/command.buildDate={{.Date}}
-      - -X github.com/etcd-id/auger/command.gitCommit={{.Commit}}
+      - -X github.com/etcd-io/auger/augerctl/command.appVersion={{.Version}}
+      - -X github.com/etcd-io/auger/augerctl/command.buildDate={{.Date}}
+      - -X github.com/etcd-io/auger/augerctl/command.gitCommit={{.Commit}}
     main: ./augerctl/main.go
     binary: augerctl
 
