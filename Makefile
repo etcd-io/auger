@@ -53,6 +53,15 @@ pkg/scheme/scheme.go: ./hack/gen_scheme.sh go.mod
 	-rm ./pkg/scheme/scheme.go
 	./hack/gen_scheme.sh > ./pkg/scheme/scheme.go
 
+pkg/old/scheme/scheme.go: ./hack/gen_old_scheme.sh pkg/old/apis
+	-rm ./pkg/old/scheme/scheme.go
+	./hack/gen_old_scheme.sh > ./pkg/old/scheme/scheme.go
+
+pkg/old/apis: ./hack/clone_old_apis.sh go.mod
+	-rm -rf ./pkg/old/apis/*
+	./hack/clone_old_apis.sh $(shell cat go.mod | grep 'k8s.io/api v0.' | awk '{print $$2}' | awk -F. '{print $$2}')
+	./scripts/fix.sh
+
 .PHONY: generate
 generate: pkg/scheme/scheme.go
 
