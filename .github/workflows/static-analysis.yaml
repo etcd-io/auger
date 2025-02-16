@@ -13,7 +13,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@2e788936b09dd82dc280e845628a40d2ba6b204c # v6.3.1
         with:
-          version: v1.60.1
+          version: v1.63.4
           args: --config tools/.golangci.yaml
       - run: |
           set -euo pipefail
