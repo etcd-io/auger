@@ -114,3 +114,14 @@ auger checksum -f <member-3-boltdb-file> -r 7
 > revision: 7
 # Oh noes! The checksum should have been the same!
 ```
+
+### Scheme
+
+When updating `k8s.io/api` in go.mod, run:
+
+```sh
+make pkg/scheme/scheme.go pkg/old/scheme/scheme.go
+```
+
+`pkg/scheme/scheme.go` includes the current release of `k8s.io/api`
+`pkg/old/scheme/scheme.go` includes the previous release removed of `k8s.io/api`

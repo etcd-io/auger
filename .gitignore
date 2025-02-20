@@ -1,6 +1,7 @@
 auger
 build
 vendor
+_tmp
 
 # IDEs
 *.iml

@@ -5,6 +5,7 @@ go 1.23.0
 toolchain go1.23.6
 
 require (
+	github.com/gogo/protobuf v1.3.2
 	github.com/google/safetext v0.0.0-20220914124124-e18e3fe012bf
 	github.com/spf13/cobra v1.9.1
 	go.etcd.io/bbolt v1.4.0
@@ -22,7 +23,6 @@ require (
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
-	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
