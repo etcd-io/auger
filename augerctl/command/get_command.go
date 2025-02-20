@@ -31,6 +31,9 @@ type getFlagpole struct {
 	Output    string
 	ChunkSize int64
 	Prefix    string
+
+	Watch     bool
+	WatchOnly bool
 }
 
 var (
@@ -49,6 +52,11 @@ var (
   augerctl get leases -n kube-system
   # Nearly equivalent
   kubectl get leases -n kube-system -o yaml
+
+  # Watch all leases with namespace "kube-system"
+  augerctl get leases -n kube-system -w
+  # Nearly equivalent
+  kubectl get leases -n kube-system -w -o yaml
 
   # List a single resource of type "apiservices.apiregistration.k8s.io" and name "v1.apps"
   augerctl get apiservices.apiregistration.k8s.io v1.apps
@@ -89,6 +97,8 @@ func newCtlGetCommand(f *flagpole) *cobra.Command {
 	cmd.Flags().Int64Var(&flags.ChunkSize, "chunk-size", 500, "chunk size of the list pager")
 	cmd.Flags().StringVar(&flags.Prefix, "prefix", "/registry", "prefix to prepend to the resource")
 
+	cmd.Flags().BoolVarP(&flags.Watch, "watch", "w", false, "after listing/getting the requested object, watch for changes")
+	cmd.Flags().BoolVar(&flags.WatchOnly, "watch-only", false, "watch for changes to the requested object(s), without listing/getting first")
 	return cmd
 }
 
@@ -124,13 +134,30 @@ func getCommand(ctx context.Context, etcdclient client.Client, flags *getFlagpol
 		client.WithResponse(printer.Print),
 	}
 
-	// TODO: Support watch
+	if flags.Watch {
+		if !flags.WatchOnly {
+			rev, err := etcdclient.Get(ctx, flags.Prefix,
+				opOpts...,
+			)
+			if err != nil {
+				return err
+			}
+			opOpts = append(opOpts, client.WithRevision(rev))
+		}
 
-	_, err := etcdclient.Get(ctx, flags.Prefix,
-		opOpts...,
-	)
-	if err != nil {
-		return err
+		err := etcdclient.Watch(ctx, flags.Prefix,
+			opOpts...,
+		)
+		if err != nil {
+			return err
+		}
+	} else {
+		_, err := etcdclient.Get(ctx, flags.Prefix,
+			opOpts...,
+		)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
