@@ -157,9 +157,8 @@ func extractValidateAndRun() error {
 			return printLeafItemSummary(kv, out)
 		} else if opts.printKey {
 			return printLeafItemKey(kv, out)
-		} else {
-			return printLeafItemValue(kv, outMediaType, out)
 		}
+		return printLeafItemValue(kv, outMediaType, out)
 	case hasKey && hasKeyPrefix:
 		return fmt.Errorf("--keys-by-prefix and --key may not be used together")
 	case hasKey && opts.listVersions:
