@@ -1,15 +1,13 @@
 ---
-run:
-  timeout: 30m
 issues:
-  max-same-issues: 0
+  exclude-files:
+    - ^zz_generated.*
   # Excluding configuration per-path, per-linter, per-text and per-source
   exclude-rules:
     # exclude ineffassing linter for generated files for conversion
     - path: conversion\.go
       linters: [ineffassign]
-  exclude-files:
-    - ^zz_generated.*
+  max-same-issues: 0
 linters:
   disable-all: true
   enable: # please keep this alphabetized
@@ -34,59 +32,24 @@ linters-settings: # please keep this alphabetized
     # Align with https://github.com/alexkohler/nakedret/blob/v1.0.2/cmd/nakedret/main.go#L10
     max-func-lines: 5
   revive:
-    ignore-generated-header: false
-    severity: error
-    confidence: 0.8
-    enable-all-rules: false
+    # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md
     rules:
       - name: blank-imports
-        severity: error
-        disabled: false
       - name: context-as-argument
-        severity: error
-        disabled: false
       - name: dot-imports
-        severity: error
-        disabled: false
       - name: error-return
-        severity: error
-        disabled: false
       - name: error-naming
-        severity: error
-        disabled: false
       - name: if-return
-        severity: error
-        disabled: false
       - name: increment-decrement
-        severity: error
-        disabled: false
       - name: var-declaration
-        severity: error
-        disabled: false
       - name: package-comments
-        severity: error
-        disabled: false
       - name: range
-        severity: error
-        disabled: false
       - name: receiver-naming
-        severity: error
-        disabled: false
       - name: time-naming
-        severity: error
-        disabled: false
       - name: indent-error-flow
-        severity: error
-        disabled: false
       - name: errorf
-        severity: error
-        disabled: false
       - name: context-keys-type
-        severity: error
-        disabled: false
       - name: error-strings
-        severity: error
-        disabled: false
       # TODO: enable the following rules
       - name: var-naming
         disabled: true
@@ -102,3 +65,6 @@ linters-settings: # please keep this alphabetized
   stylecheck:
     checks:
       - ST1019 # Importing the same package multiple times.
+
+run:
+  timeout: 30m
