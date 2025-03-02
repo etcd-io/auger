@@ -25,11 +25,11 @@ fmt:
 	@!(gofmt -l -s -d ${GOFILES} | grep '[a-z]')
 
 	@echo "Verifying goimports, failures can be fixed with ./scripts/fix.sh"
-	@!(go run golang.org/x/tools/cmd/goimports@latest -l -d ${GOFILES} | grep '[a-z]')
+	@!(go tool goimports -l -d ${GOFILES} | grep '[a-z]')
 
 .PHONY: verify
 verify:
-	golangci-lint run --config tools/.golangci.yaml ./...
+	go tool golangci-lint run --config tools/.golangci.yaml ./...
 
 # Local development build
 build:

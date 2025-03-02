@@ -36,20 +36,28 @@ linters-settings: # please keep this alphabetized
     rules:
       - name: blank-imports
       - name: context-as-argument
+      - name: context-keys-type
       - name: dot-imports
+      - name: early-return
+        arguments:
+          - "preserveScope"
       - name: error-return
       - name: error-naming
+      - name: error-strings
+      - name: errorf
       - name: if-return
       - name: increment-decrement
-      - name: var-declaration
       - name: package-comments
       - name: range
       - name: receiver-naming
       - name: time-naming
       - name: indent-error-flow
-      - name: errorf
-      - name: context-keys-type
-      - name: error-strings
+        arguments:
+          - "preserveScope"
+      - name: superfluous-else
+        arguments:
+          - "preserveScope"
+      - name: var-declaration
       # TODO: enable the following rules
       - name: var-naming
         disabled: true
