@@ -17,6 +17,7 @@ linters:
     # - structcheck
     # - varcheck
     - goimports
+    - importas
     - ineffassign
     - nakedret
     - revive
@@ -28,6 +29,10 @@ linters:
 linters-settings: # please keep this alphabetized
   goimports:
     local-prefixes: go.etcd.io # Put imports beginning with prefix after 3rd-party packages.
+  importas:
+    alias:
+      - alias: metav1
+        pkg: k8s.io/apimachinery/pkg/apis/meta/v1
   nakedret:
     # Align with https://github.com/alexkohler/nakedret/blob/v1.0.2/cmd/nakedret/main.go#L10
     max-func-lines: 5
@@ -54,9 +59,16 @@ linters-settings: # please keep this alphabetized
       - name: indent-error-flow
         arguments:
           - "preserveScope"
+      - name: receiver-naming
+      - name: redundant-import-alias
       - name: superfluous-else
         arguments:
           - "preserveScope"
+      - name: unnecessary-stmt
+      - name: unused-parameter
+      - name: use-any
+      - name: use-errors-new
+      - name: useless-break
       - name: var-declaration
       # TODO: enable the following rules
       - name: var-naming

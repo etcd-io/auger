@@ -28,7 +28,7 @@ import (
 var analyzeCmd = &cobra.Command{
 	Use:   "analyze",
 	Short: "Analyze kubernetes data from the boltdb '.db' files etcd persists to.",
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		return analyzeValidateAndRun()
 	},
 }

@@ -17,6 +17,7 @@ limitations under the License.
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -62,7 +63,7 @@ var decodeCmd = &cobra.Command{
 	Short:   "Decode objects from the kubernetes binary key-value store encoding.",
 	Long:    decodeLong,
 	Example: decodeExample,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		return validateAndRun()
 	},
 }
@@ -97,7 +98,7 @@ func validateAndRun() error {
 
 	in, err := readInput(options.inputFilename)
 	if len(in) == 0 {
-		return fmt.Errorf("no input data")
+		return errors.New("no input data")
 	}
 	if err != nil {
 		return err

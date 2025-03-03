@@ -17,7 +17,7 @@ limitations under the License.
 package client
 
 import (
-	"fmt"
+	"errors"
 	"strings"
 
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -42,7 +42,7 @@ var specialDefaultMediaTypes = map[string]struct{}{
 // prefixFromGR returns the prefix of the given GroupResource.
 func prefixFromGR(gr schema.GroupResource) (string, error) {
 	if gr.Resource == "" {
-		return "", fmt.Errorf("resource is empty")
+		return "", errors.New("resource is empty")
 	}
 
 	if prefix, ok := specialDefaultResourcePrefixes[gr]; ok {
@@ -80,7 +80,7 @@ func getPrefix(prefix string, gr schema.GroupResource, name, namespace string) (
 
 	if gr.Empty() {
 		if namespace != "" || name != "" {
-			return "", false, fmt.Errorf("namespace and name must be omitted if there is no GroupResource")
+			return "", false, errors.New("namespace and name must be omitted if there is no GroupResource")
 		}
 	} else {
 		p, err := prefixFromGR(gr)

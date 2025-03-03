@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"hash/crc32"
 	"os"
@@ -47,7 +48,7 @@ var (
 type KeySummary struct {
 	Key      string
 	Version  int64
-	Value    interface{}
+	Value    any
 	TypeMeta *runtime.TypeMeta
 	Stats    *KeySummaryStats
 }
@@ -252,7 +253,7 @@ func ListKeySummaries(codecs serializer.CodecFactory, filename string, filters [
 					valJson = strings.TrimSpace(string(buf))
 				}
 				var key string
-				var value map[string]interface{}
+				var value map[string]any
 				if proj.HasKey {
 					key = string(kv.Key)
 				}
@@ -328,7 +329,7 @@ func ListVersions(filename string, key string) ([]int64, error) {
 
 	var result []int64
 
-	err = walk(db, func(r revKey, kv *mvccpb.KeyValue) (bool, error) {
+	err = walk(db, func(_ revKey, kv *mvccpb.KeyValue) (bool, error) {
 		if string(kv.Key) == key {
 			result = append(result, kv.Version)
 		}
@@ -350,7 +351,7 @@ func GetValue(filename string, key string, version int64) ([]byte, error) {
 	defer db.Close()
 	var result []byte
 	found := false
-	err = walk(db, func(r revKey, kv *mvccpb.KeyValue) (bool, error) {
+	err = walk(db, func(_ revKey, kv *mvccpb.KeyValue) (bool, error) {
 		if string(kv.Key) == key && kv.Version == version {
 			result = kv.Value
 			found = true
@@ -378,7 +379,7 @@ func walkRevision(db *bolt.DB, revision int64, f func(r revKey, kv *mvccpb.KeyVa
 		return err
 	}
 	if revision > 0 && revision < compactRev {
-		return fmt.Errorf("required revision has been compacted")
+		return errors.New("required revision has been compacted")
 	}
 
 	m := map[string]kvr{}
@@ -500,7 +501,7 @@ func ParseFilters(filters string) ([]Filter, error) {
 	return results, nil
 }
 
-func rawJsonMarshal(data interface{}) string {
+func rawJsonMarshal(data any) string {
 	b, err := json.Marshal(data)
 	if err != nil {
 		return ""
@@ -508,8 +509,8 @@ func rawJsonMarshal(data interface{}) string {
 	return string(b)
 }
 
-func rawJsonUnmarshal(valJson string) map[string]interface{} {
-	val := map[string]interface{}{}
+func rawJsonUnmarshal(valJson string) map[string]any {
+	val := map[string]any{}
 	if err := json.Unmarshal([]byte(valJson), &val); err != nil {
 		val = nil
 	}
