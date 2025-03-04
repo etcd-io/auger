@@ -99,11 +99,11 @@ func Convert(codecs serializer.CodecFactory, inMediaType, outMediaType string, i
 	} else if inMediaType == JsonMediaType && outMediaType == YamlMediaType {
 		val := map[string]any{}
 		if err := json.Unmarshal(in, &val); err != nil {
-			return nil, nil, fmt.Errorf("error decoding from %s: %s", inMediaType, err)
+			return nil, nil, fmt.Errorf("error decoding from %s: %w", inMediaType, err)
 		}
 		encoded, err = yaml.Marshal(val)
 		if err != nil {
-			return nil, nil, fmt.Errorf("error encoding from %s: %s", outMediaType, err)
+			return nil, nil, fmt.Errorf("error encoding from %s: %w", outMediaType, err)
 		}
 	} else {
 		inCodec, err := newCodec(codecs, typeMeta, inMediaType)
@@ -117,12 +117,12 @@ func Convert(codecs serializer.CodecFactory, inMediaType, outMediaType string, i
 
 		obj, err := runtime.Decode(inCodec, in)
 		if err != nil {
-			return nil, nil, fmt.Errorf("error decoding from %s: %s", inMediaType, err)
+			return nil, nil, fmt.Errorf("error decoding from %s: %w", inMediaType, err)
 		}
 
 		encoded, err = runtime.Encode(outCodec, obj)
 		if err != nil {
-			return nil, nil, fmt.Errorf("error encoding to %s: %s", outMediaType, err)
+			return nil, nil, fmt.Errorf("error encoding to %s: %w", outMediaType, err)
 		}
 	}
 
@@ -222,7 +222,7 @@ func newCodec(codecs serializer.CodecFactory, typeMeta *runtime.TypeMeta, mediaT
 
 	gv, err := schema.ParseGroupVersion(typeMeta.APIVersion)
 	if err != nil {
-		return nil, fmt.Errorf("unable to parse meta APIVersion '%s': %s", typeMeta.APIVersion, err)
+		return nil, fmt.Errorf("unable to parse meta APIVersion '%s': %w", typeMeta.APIVersion, err)
 	}
 	encoder := codecs.EncoderForVersion(info.Serializer, gv)
 	decoder := codecs.DecoderToVersion(info.Serializer, gv)

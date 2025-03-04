@@ -136,7 +136,7 @@ func (ff *FieldFilter) Accept(ks *KeySummary) (bool, error) {
 	buf := new(bytes.Buffer)
 	err := ff.lhsTemplate.Execute(buf, ks)
 	if err != nil {
-		return false, fmt.Errorf("failed to look up field in filter %s: %v", ff.lhs, err)
+		return false, fmt.Errorf("failed to look up field in filter %s: %w", ff.lhs, err)
 	}
 	val := buf.String()
 	switch ff.op {
@@ -162,7 +162,7 @@ func boltOpen(path string) (*bolt.DB, error) {
 	}
 
 	// Open the file in read-only mode
-	return bolt.Open(path, 0400, &bolt.Options{
+	return bolt.Open(path, 0o400, &bolt.Options{
 		ReadOnly: true,
 	})
 }
@@ -294,7 +294,6 @@ func ListKeySummaries(codecs serializer.CodecFactory, filename string, filters [
 				ks.Stats.AllVersionsKeySize += len(kv.Key)
 				ks.Stats.AllVersionsValueSize += len(kv.Value)
 			}
-
 		}
 		return false, nil
 	})

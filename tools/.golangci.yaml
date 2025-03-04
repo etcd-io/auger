@@ -16,7 +16,10 @@ linters:
     # - deadcode
     # - structcheck
     # - varcheck
+    - errorlint
+    - gofumpt
     - goimports
+    - gosimple
     - importas
     - ineffassign
     - nakedret
@@ -26,6 +29,9 @@ linters:
     - unconvert # Remove unnecessary type conversions
     - unparam
     - unused
+    - usestdlibvars
+    - usetesting
+    - whitespace
 linters-settings: # please keep this alphabetized
   goimports:
     local-prefixes: go.etcd.io # Put imports beginning with prefix after 3rd-party packages.
@@ -85,6 +91,7 @@ linters-settings: # please keep this alphabetized
   stylecheck:
     checks:
       - ST1019 # Importing the same package multiple times.
-
+  usetesting:
+    os-mkdir-temp: false
 run:
   timeout: 30m

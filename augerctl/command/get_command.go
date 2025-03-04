@@ -33,8 +33,7 @@ type getFlagpole struct {
 	Prefix    string
 }
 
-var (
-	getExample = `
+var getExample = `
   # List a single service with namespace "default" and name "kubernetes"
   augerctl get services -n default kubernetes
   # Nearly equivalent
@@ -60,7 +59,6 @@ var (
   # Nearly equivalent
   kubectl get $(kubectl api-resources --verbs=list --output=name | paste -s -d, - ) -A -o yaml
 `
-)
 
 func newCtlGetCommand(f *flagpole) *cobra.Command {
 	flags := &getFlagpole{}
@@ -76,7 +74,6 @@ func newCtlGetCommand(f *flagpole) *cobra.Command {
 				return err
 			}
 			err = getCommand(cmd.Context(), etcdclient, flags, args)
-
 			if err != nil {
 				return fmt.Errorf("%v: %w", args, err)
 			}
