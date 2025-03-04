@@ -17,14 +17,13 @@ limitations under the License.
 package cmd
 
 import (
+	"bufio"
+	"bytes"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
 	"os"
-
-	"bufio"
-	"bytes"
-	"encoding/hex"
 
 	"github.com/etcd-io/auger/pkg/encoding"
 	"github.com/etcd-io/auger/pkg/scheme"
@@ -122,17 +121,17 @@ func runInBatchMode(metaOnly bool, outMediaType string, out io.Writer) (err erro
 	lineNum := 0
 	for {
 		input, err := inputReader.ReadBytes(byte('\n'))
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			return nil
 		}
 		if err != nil {
-			return fmt.Errorf("error reading --batch-process input: %v", err)
+			return fmt.Errorf("error reading --batch-process input: %w", err)
 		}
 
 		input = stripNewline(input)
 		decodedinput, err := hex.DecodeString(string(input))
 		if err != nil {
-			return fmt.Errorf("error decoding input on line %d of --batch-process input: %v", lineNum, err)
+			return fmt.Errorf("error decoding input on line %d of --batch-process input: %w", lineNum, err)
 		}
 		inMediaType, decodedinput, err := encoding.DetectAndExtract(decodedinput)
 		if err != nil {
@@ -144,7 +143,6 @@ func runInBatchMode(metaOnly bool, outMediaType string, out io.Writer) (err erro
 			buf := bytes.NewBufferString("")
 			err = encoding.DecodeSummary(inMediaType, decodedinput, buf)
 			if err != nil {
-
 				fmt.Fprintf(out, "ERROR:%v|\n", err)
 			} else {
 				fmt.Fprintf(out, "OK|%s\n", buf.String())
@@ -188,7 +186,7 @@ func readInput(inputFilename string) ([]byte, error) {
 	if inputFilename != "" {
 		data, err := os.ReadFile(inputFilename)
 		if err != nil {
-			return nil, fmt.Errorf("error reading input file %s: %v", inputFilename, err)
+			return nil, fmt.Errorf("error reading input file %s: %w", inputFilename, err)
 		}
 		data = stripNewline(data)
 		return data, nil
@@ -196,7 +194,7 @@ func readInput(inputFilename string) ([]byte, error) {
 
 	stat, err := os.Stdin.Stat()
 	if err != nil {
-		return nil, fmt.Errorf("stdin error: %s", err)
+		return nil, fmt.Errorf("stdin error: %w", err)
 	}
 	if (stat.Mode() & os.ModeCharDevice) != 0 {
 		fmt.Fprintln(os.Stderr, "warn: waiting on stdin from tty")
@@ -204,7 +202,7 @@ func readInput(inputFilename string) ([]byte, error) {
 
 	stdin, err := io.ReadAll(os.Stdin)
 	if err != nil {
-		return nil, fmt.Errorf("unable to read data from stdin: %v", err)
+		return nil, fmt.Errorf("unable to read data from stdin: %w", err)
 	}
 	// Etcd --print-value-only includes an extranous newline even for binary values.
 	// We can safely strip it off since none of the valid inputs this code processes

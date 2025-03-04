@@ -135,7 +135,7 @@ func templateFields() string {
 func extractValidateAndRun() error {
 	outMediaType, err := encoding.ToMediaType(opts.out)
 	if err != nil {
-		return fmt.Errorf("invalid --output %s: %s", opts.out, err)
+		return fmt.Errorf("invalid --output %s: %w", opts.out, err)
 	}
 	out := os.Stdout
 	hasKey := opts.key != ""
@@ -148,11 +148,11 @@ func extractValidateAndRun() error {
 	case opts.leafItem:
 		raw, err := readInput(opts.filename)
 		if err != nil {
-			return fmt.Errorf("unable to read input: %s", err)
+			return fmt.Errorf("unable to read input: %w", err)
 		}
 		kv, err := extractKvFromLeafItem(raw)
 		if err != nil {
-			return fmt.Errorf("failed to extract etcd key-value record from boltdb leaf item: %s", err)
+			return fmt.Errorf("failed to extract etcd key-value record from boltdb leaf item: %w", err)
 		}
 		if opts.metaSummary {
 			return printLeafItemSummary(kv, out)
@@ -209,7 +209,7 @@ func printValue(filename string, key string, version string, raw bool, outMediaT
 	} else {
 		v, err = strconv.ParseInt(version, 10, 64)
 		if err != nil {
-			return fmt.Errorf("version must be an int64, but got %s: %s", version, err)
+			return fmt.Errorf("version must be an int64, but got %s: %w", version, err)
 		}
 	}
 	in, err := data.GetValue(filename, key, v)
