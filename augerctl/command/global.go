@@ -18,7 +18,7 @@ package command
 
 import (
 	"crypto/tls"
-	"fmt"
+	"errors"
 	"strings"
 
 	"github.com/etcd-io/auger/pkg/client"
@@ -70,7 +70,7 @@ func clientConfigFromCmd(f *flagpole) (clientv3.Config, error) {
 		if f.Password == "" {
 			splitted := strings.SplitN(f.User, ":", 2)
 			if len(splitted) < 2 {
-				return clientv3.Config{}, fmt.Errorf("password is missing")
+				return clientv3.Config{}, errors.New("password is missing")
 			}
 			cfg.Username = splitted[0]
 			cfg.Password = splitted[1]

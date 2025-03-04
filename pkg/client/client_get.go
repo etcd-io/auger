@@ -18,19 +18,19 @@ package client
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
 func (c *client) Get(ctx context.Context, prefix string, opOpts ...OpOption) (rev int64, err error) {
 	if prefix == "" {
-		return 0, fmt.Errorf("prefix is required")
+		return 0, errors.New("prefix is required")
 	}
 
 	opt := opOption(opOpts)
 	if opt.response == nil {
-		return 0, fmt.Errorf("response is required")
+		return 0, errors.New("response is required")
 	}
 
 	path, single, err := getPrefix(prefix, opt.gr, opt.name, opt.namespace)

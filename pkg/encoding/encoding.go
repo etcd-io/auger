@@ -19,6 +19,7 @@ package encoding
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 
@@ -80,7 +81,7 @@ func Convert(codecs serializer.CodecFactory, inMediaType, outMediaType string, i
 	}
 
 	if inMediaType == ProtobufMediaType && outMediaType == StorageBinaryMediaType {
-		return nil, nil, fmt.Errorf("unsupported conversion: protobuf to kubernetes binary storage representation")
+		return nil, nil, errors.New("unsupported conversion: protobuf to kubernetes binary storage representation")
 	}
 
 	typeMeta, err := DecodeTypeMeta(inMediaType, in)
@@ -96,7 +97,7 @@ func Convert(codecs serializer.CodecFactory, inMediaType, outMediaType string, i
 			encoded = append(encoded, '\n')
 		}
 	} else if inMediaType == JsonMediaType && outMediaType == YamlMediaType {
-		val := map[string]interface{}{}
+		val := map[string]any{}
 		if err := json.Unmarshal(in, &val); err != nil {
 			return nil, nil, fmt.Errorf("error decoding from %s: %s", inMediaType, err)
 		}
@@ -140,7 +141,7 @@ func DetectAndExtract(in []byte) (string, []byte, error) {
 		}
 		return JsonMediaType, js, nil
 	}
-	return "", nil, fmt.Errorf("error reading input, does not appear to contain valid JSON or binary data")
+	return "", nil, errors.New("error reading input, does not appear to contain valid JSON or binary data")
 }
 
 // TryFindProto searches for the 'k8s\0' prefix, and, if found, returns the data starting with the prefix.

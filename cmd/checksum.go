@@ -26,7 +26,7 @@ import (
 var checksumCmd = &cobra.Command{
 	Use:   "checksum",
 	Short: "Checksum a etcd keyspace.",
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		return checksum()
 	},
 }

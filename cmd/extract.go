@@ -17,6 +17,7 @@ limitations under the License.
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -70,7 +71,7 @@ var extractCmd = &cobra.Command{
 	Short:   "Extracts kubernetes data from the boltdb '.db' files etcd persists to.",
 	Long:    extractLong,
 	Example: extractExample,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		return extractValidateAndRun()
 	},
 }
@@ -160,17 +161,17 @@ func extractValidateAndRun() error {
 		}
 		return printLeafItemValue(kv, outMediaType, out)
 	case hasKey && hasKeyPrefix:
-		return fmt.Errorf("--keys-by-prefix and --key may not be used together")
+		return errors.New("--keys-by-prefix and --key may not be used together")
 	case hasKey && opts.listVersions:
 		return printVersions(opts.filename, opts.key, out)
 	case hasKey:
 		return printValue(opts.filename, opts.key, opts.version, opts.raw, outMediaType, out)
 	case !hasKey && opts.listVersions:
-		return fmt.Errorf("--list-versions may only be used with --key")
+		return errors.New("--list-versions may only be used with --key")
 	case !hasKey && hasVersion:
-		return fmt.Errorf("--version may only be used with --key")
+		return errors.New("--version may only be used with --key")
 	case hasTemplate && hasFields:
-		return fmt.Errorf("--template and --fields may not be used together")
+		return errors.New("--template and --fields may not be used together")
 	case hasTemplate:
 		return printTemplateSummaries(opts.filename, opts.keyPrefix, opts.revision, opts.template, opts.filter, out)
 	default:
@@ -216,7 +217,7 @@ func printValue(filename string, key string, version string, raw bool, outMediaT
 		return err
 	}
 	if len(in) == 0 {
-		return fmt.Errorf("0 byte value")
+		return errors.New("0 byte value")
 	}
 	if raw {
 		fmt.Fprintf(out, "%s\n", string(in))
@@ -259,7 +260,7 @@ func printLeafItemValue(kv *mvccpb.KeyValue, outMediaType string, out io.Writer)
 // printKeySummaries prints all keys in the db file with the given key prefix.
 func printKeySummaries(filename string, keyPrefix string, revision int64, fields []string, out io.Writer) error {
 	if len(fields) == 0 {
-		return fmt.Errorf("no fields provided, nothing to output")
+		return errors.New("no fields provided, nothing to output")
 	}
 
 	var hasKey bool
@@ -297,7 +298,7 @@ func printTemplateSummaries(filename string, keyPrefix string, revision int64, t
 	}
 
 	if len(templatestr) == 0 {
-		return fmt.Errorf("no template provided, nothing to output")
+		return errors.New("no template provided, nothing to output")
 	}
 
 	filters := []data.Filter{}
