@@ -86,6 +86,14 @@ augerctl get leases -n kube-system
 kubectl get leases -n kube-system -o yaml
 ```
 
+Watch all leases with namespace `kube-system`
+
+``` bash
+augerctl get leases -n kube-system -w
+# Nearly equivalent
+kubectl get leases -n kube-system -w -o yaml
+```
+
 List a single resource of type `apiservices.apiregistration.k8s.io` and name `v1.apps`
 
 ``` bash
