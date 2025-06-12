@@ -2,7 +2,7 @@ module github.com/etcd-io/auger
 
 go 1.24
 
-toolchain go1.24.3
+toolchain go1.24.4
 
 require (
 	github.com/google/safetext v0.0.0-20220914124124-e18e3fe012bf
