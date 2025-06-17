@@ -24,7 +24,6 @@ import (
 	"io"
 
 	yaml "gopkg.in/yaml.v2"
-
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
