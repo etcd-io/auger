@@ -1,6 +1,6 @@
 module github.com/etcd-io/auger
 
-go 1.24
+go 1.24.0
 
 toolchain go1.24.5
 
@@ -13,7 +13,7 @@ require (
 	go.etcd.io/etcd/client/v3 v3.6.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.31.3
-	k8s.io/apimachinery v0.32.3
+	k8s.io/apimachinery v0.33.3
 	k8s.io/client-go v0.31.3
 )
 
@@ -90,7 +90,6 @@ require (
 	github.com/golangci/revgrep v0.8.0 // indirect
 	github.com/golangci/unconvert v0.0.0-20240309020433-c5143eacb3ed // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/gordonklaus/ineffassign v0.1.0 // indirect
 	github.com/gostaticanalysis/analysisutil v0.7.1 // indirect
 	github.com/gostaticanalysis/comment v1.5.0 // indirect
@@ -212,6 +211,7 @@ require (
 	mvdan.cc/gofumpt v0.7.0 // indirect
 	mvdan.cc/unparam v0.0.0-20240528143540-8a5130ca722f // indirect
 	sigs.k8s.io/json v0.0.0-20241010143419-9aa6b5e7a4b3 // indirect
+	sigs.k8s.io/randfill v1.0.0 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.7.0 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
