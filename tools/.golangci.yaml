@@ -1,106 +1,103 @@
----
-formatters:
-  enable:
-    - gci
-  settings: # please keep this alphabetized
-    gci:
-      sections:
-        - standard
-        - default
-        - prefix(go.etcd.io)
-issues:
-  exclude-files:
-    - ^zz_generated.*
-  # Excluding configuration per-path, per-linter, per-text and per-source
-  exclude-rules:
-    # exclude ineffassing linter for generated files for conversion
-    - path: conversion\.go
-      linters: [ineffassign]
-  max-same-issues: 0
+version: "2"
 linters:
-  disable-all: true
-  enable: # please keep this alphabetized
-    # Don't use soon to deprecated[1] linters that lead to false
-    # https://github.com/golangci/golangci-lint/issues/1841
-    # - deadcode
-    # - structcheck
-    # - varcheck
+  default: none
+  enable:
     - errorlint
-    - gofumpt
-    - goimports
-    - gosimple
     - importas
     - ineffassign
     - nakedret
     - revive
     - staticcheck
-    - stylecheck
-    - unconvert # Remove unnecessary type conversions
+    - unconvert
     - unparam
     - unused
     - usestdlibvars
     - usetesting
     - whitespace
-linters-settings: # please keep this alphabetized
-  goimports:
-    local-prefixes: go.etcd.io # Put imports beginning with prefix after 3rd-party packages.
-  importas:
-    alias:
-      - alias: metav1
-        pkg: k8s.io/apimachinery/pkg/apis/meta/v1
-  nakedret:
-    # Align with https://github.com/alexkohler/nakedret/blob/v1.0.2/cmd/nakedret/main.go#L10
-    max-func-lines: 5
-  revive:
-    # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md
+  settings:
+    importas:
+      alias:
+        - pkg: k8s.io/apimachinery/pkg/apis/meta/v1
+          alias: metav1
+    nakedret:
+      max-func-lines: 5
+    revive:
+      rules:
+        - name: blank-imports
+        - name: context-as-argument
+        - name: context-keys-type
+        - name: dot-imports
+        - name: early-return
+          arguments:
+            - preserveScope
+        - name: error-return
+        - name: error-naming
+        - name: error-strings
+        - name: errorf
+        - name: if-return
+        - name: increment-decrement
+        - name: package-comments
+        - name: range
+        - name: receiver-naming
+        - name: time-naming
+        - name: indent-error-flow
+          arguments:
+            - preserveScope
+        - name: receiver-naming
+        - name: redundant-import-alias
+        - name: superfluous-else
+          arguments:
+            - preserveScope
+        - name: unnecessary-stmt
+        - name: unused-parameter
+        - name: use-any
+        - name: use-errors-new
+        - name: useless-break
+        - name: var-declaration
+        - name: var-naming
+          disabled: true
+        - name: exported
+          disabled: true
+        - name: unexported-return
+          disabled: true
+    staticcheck:
+      checks:
+        - all
+        - -SA1019
+        - -SA2002
+        - ST1019
+    usetesting:
+      os-mkdir-temp: false
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
     rules:
-      - name: blank-imports
-      - name: context-as-argument
-      - name: context-keys-type
-      - name: dot-imports
-      - name: early-return
-        arguments:
-          - "preserveScope"
-      - name: error-return
-      - name: error-naming
-      - name: error-strings
-      - name: errorf
-      - name: if-return
-      - name: increment-decrement
-      - name: package-comments
-      - name: range
-      - name: receiver-naming
-      - name: time-naming
-      - name: indent-error-flow
-        arguments:
-          - "preserveScope"
-      - name: receiver-naming
-      - name: redundant-import-alias
-      - name: superfluous-else
-        arguments:
-          - "preserveScope"
-      - name: unnecessary-stmt
-      - name: unused-parameter
-      - name: use-any
-      - name: use-errors-new
-      - name: useless-break
-      - name: var-declaration
-      # TODO: enable the following rules
-      - name: var-naming
-        disabled: true
-      - name: exported
-        disabled: true
-      - name: unexported-return
-        disabled: true
-  staticcheck:
-    checks:
-      - all
-      - -SA1019 # TODO(fix) Using a deprecated function, variable, constant or field
-      - -SA2002 # TODO(fix) Called testing.T.FailNow or SkipNow in a goroutine, which isn’t allowed
-  stylecheck:
-    checks:
-      - ST1019 # Importing the same package multiple times.
-  usetesting:
-    os-mkdir-temp: false
-run:
-  timeout: 30m
+      - linters:
+          - ineffassign
+        path: conversion\.go
+    paths:
+      - ^zz_generated.*
+      - third_party$
+      - builtin$
+      - examples$
+issues:
+  max-same-issues: 0
+formatters:
+  enable:
+    - gofumpt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - go.etcd.io
+  exclusions:
+    generated: lax
+    paths:
+      - ^zz_generated.*
+      - third_party$
+      - builtin$
+      - examples$
