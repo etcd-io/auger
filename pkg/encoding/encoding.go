@@ -233,7 +233,7 @@ func newCodec(codecs serializer.CodecFactory, typeMeta *runtime.TypeMeta, mediaT
 func DecodeTypeMeta(inMediaType string, in []byte) (*runtime.TypeMeta, error) {
 	switch inMediaType {
 	case JsonMediaType:
-		return typeMetaFromJson(in)
+		return typeMetaFromJSON(in)
 	case StorageBinaryMediaType:
 		return typeMetaFromBinaryStorage(in)
 	case YamlMediaType:
@@ -243,7 +243,7 @@ func DecodeTypeMeta(inMediaType string, in []byte) (*runtime.TypeMeta, error) {
 	}
 }
 
-func typeMetaFromJson(in []byte) (*runtime.TypeMeta, error) {
+func typeMetaFromJSON(in []byte) (*runtime.TypeMeta, error) {
 	var meta runtime.TypeMeta
 	if err := json.Unmarshal(in, &meta); err != nil {
 		return nil, err
