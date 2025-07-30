@@ -143,7 +143,7 @@ func (ff *FieldFilter) Accept(ks *KeySummary) (bool, error) {
 	case Equals:
 		return val == ff.rhs, nil
 	default:
-		return false, fmt.Errorf("Unsupported filter operator: %s", ff.op.String())
+		return false, fmt.Errorf("unsupported filter operator: %s", ff.op.String())
 	}
 }
 
@@ -430,7 +430,7 @@ func walk(db *bolt.DB, f func(r revKey, kv *mvccpb.KeyValue) (bool, error)) erro
 			}
 			done, err := f(revision, kv)
 			if err != nil {
-				return fmt.Errorf("Error handling key %s", kv.Key)
+				return fmt.Errorf("error handling key %s", kv.Key)
 			}
 			if done {
 				break
