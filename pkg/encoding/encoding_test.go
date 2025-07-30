@@ -64,9 +64,9 @@ var findJsonTests = []struct {
 	{"{}[", false, ""},
 }
 
-func TestTryFindJson(t *testing.T) {
+func TestTryFindJSON(t *testing.T) {
 	for _, test := range findJsonTests {
-		out, ok := tryFindJson([]byte(test.in))
+		out, ok := tryFindJSON([]byte(test.in))
 		if test.ok != ok {
 			t.Errorf("got ok=%t, want ok=%t for %+v", ok, test.ok, test)
 		}

@@ -133,7 +133,7 @@ func DetectAndExtract(in []byte) (string, []byte, error) {
 	if pb, ok := tryFindProto(in); ok {
 		return StorageBinaryMediaType, pb, nil
 	}
-	if rawJs, ok := tryFindJson(in); ok {
+	if rawJs, ok := tryFindJSON(in); ok {
 		js, err := rawJs.MarshalJSON()
 		if err != nil {
 			return "", nil, err
@@ -154,8 +154,8 @@ func tryFindProto(in []byte) ([]byte, bool) {
 
 const jsonStartChars = "{["
 
-// TryFindJson searches for the start of a valid json substring, and, if found, returns the json.
-func tryFindJson(in []byte) (*json.RawMessage, bool) {
+// TryFindJSON searches for the start of a valid json substring, and, if found, returns the json.
+func tryFindJSON(in []byte) (*json.RawMessage, bool) {
 	var js json.RawMessage
 
 	i := bytes.IndexAny(in, jsonStartChars)
