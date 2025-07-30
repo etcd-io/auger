@@ -253,11 +253,11 @@ func ListKeySummaries(codecs serializer.CodecFactory, filename string, filters [
 			ks, ok := m[string(kv.Key)]
 			if !ok {
 				var buf []byte
-				var valJson string
+				var valJSON string
 				var typeMeta *runtime.TypeMeta
 				var err error
 				if buf, typeMeta, err = encoding.DetectAndConvert(codecs, encoding.JsonMediaType, kv.Value); err == nil {
-					valJson = strings.TrimSpace(string(buf))
+					valJSON = strings.TrimSpace(string(buf))
 				}
 				var key string
 				var value map[string]any
@@ -267,7 +267,7 @@ func ListKeySummaries(codecs serializer.CodecFactory, filename string, filters [
 				// If the caller or filters need the value, we need to deserialize it.
 				// For filters we don't yet know if they need it, so if there are any filters we must include it.
 				if proj.HasValue || len(filters) > 0 {
-					value = rawJSONUnmarshal(valJson)
+					value = rawJSONUnmarshal(valJSON)
 				}
 				ks = &KeySummary{
 					Key:     key,
@@ -515,9 +515,9 @@ func rawJSONMarshal(data any) string {
 	return string(b)
 }
 
-func rawJSONUnmarshal(valJson string) map[string]any {
+func rawJSONUnmarshal(valJSON string) map[string]any {
 	val := map[string]any{}
-	if err := json.Unmarshal([]byte(valJson), &val); err != nil {
+	if err := json.Unmarshal([]byte(valJSON), &val); err != nil {
 		val = nil
 	}
 	return val
