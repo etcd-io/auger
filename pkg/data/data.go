@@ -63,8 +63,15 @@ type KeySummaryStats struct {
 }
 
 // ValueJson gets the json representation of a kubernetes object stored in etcd.
+//
+// Deprecated: Use ValueJSON instead.
 func (ks *KeySummary) ValueJson() string {
-	return rawJsonMarshal(ks.Value)
+	return rawJSONMarshal(ks.Value)
+}
+
+// ValueJSON gets the json representation of a kubernetes object stored in etcd
+func (ks *KeySummary) ValueJSON() string {
+	return rawJSONMarshal(ks.Value)
 }
 
 // KeySummaryProjection declares which optional fields to include in KeySummary results.
@@ -260,7 +267,7 @@ func ListKeySummaries(codecs serializer.CodecFactory, filename string, filters [
 				// If the caller or filters need the value, we need to deserialize it.
 				// For filters we don't yet know if they need it, so if there are any filters we must include it.
 				if proj.HasValue || len(filters) > 0 {
-					value = rawJsonUnmarshal(valJson)
+					value = rawJSONUnmarshal(valJson)
 				}
 				ks = &KeySummary{
 					Key:     key,
@@ -500,7 +507,7 @@ func ParseFilters(filters string) ([]Filter, error) {
 	return results, nil
 }
 
-func rawJsonMarshal(data any) string {
+func rawJSONMarshal(data any) string {
 	b, err := json.Marshal(data)
 	if err != nil {
 		return ""
@@ -508,7 +515,7 @@ func rawJsonMarshal(data any) string {
 	return string(b)
 }
 
-func rawJsonUnmarshal(valJson string) map[string]any {
+func rawJSONUnmarshal(valJson string) map[string]any {
 	val := map[string]any{}
 	if err := json.Unmarshal([]byte(valJson), &val); err != nil {
 		val = nil
