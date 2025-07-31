@@ -63,8 +63,17 @@ type KeySummaryStats struct {
 }
 
 // ValueJson gets the json representation of a kubernetes object stored in etcd.
+//
+// Deprecated: Use ValueJSON instead.
+//
+//nolint:staticcheck
 func (ks *KeySummary) ValueJson() string {
-	return rawJsonMarshal(ks.Value)
+	return ks.ValueJSON()
+}
+
+// ValueJSON gets the json representation of a kubernetes object stored in etcd
+func (ks *KeySummary) ValueJSON() string {
+	return rawJSONMarshal(ks.Value)
 }
 
 // KeySummaryProjection declares which optional fields to include in KeySummary results.
@@ -143,7 +152,7 @@ func (ff *FieldFilter) Accept(ks *KeySummary) (bool, error) {
 	case Equals:
 		return val == ff.rhs, nil
 	default:
-		return false, fmt.Errorf("Unsupported filter operator: %s", ff.op.String())
+		return false, fmt.Errorf("unsupported filter operator: %s", ff.op.String())
 	}
 }
 
@@ -246,11 +255,11 @@ func ListKeySummaries(codecs serializer.CodecFactory, filename string, filters [
 			ks, ok := m[string(kv.Key)]
 			if !ok {
 				var buf []byte
-				var valJson string
+				var valJSON string
 				var typeMeta *runtime.TypeMeta
 				var err error
 				if buf, typeMeta, err = encoding.DetectAndConvert(codecs, encoding.JsonMediaType, kv.Value); err == nil {
-					valJson = strings.TrimSpace(string(buf))
+					valJSON = strings.TrimSpace(string(buf))
 				}
 				var key string
 				var value map[string]any
@@ -260,7 +269,7 @@ func ListKeySummaries(codecs serializer.CodecFactory, filename string, filters [
 				// If the caller or filters need the value, we need to deserialize it.
 				// For filters we don't yet know if they need it, so if there are any filters we must include it.
 				if proj.HasValue || len(filters) > 0 {
-					value = rawJsonUnmarshal(valJson)
+					value = rawJSONUnmarshal(valJSON)
 				}
 				ks = &KeySummary{
 					Key:     key,
@@ -430,7 +439,7 @@ func walk(db *bolt.DB, f func(r revKey, kv *mvccpb.KeyValue) (bool, error)) erro
 			}
 			done, err := f(revision, kv)
 			if err != nil {
-				return fmt.Errorf("Error handling key %s", kv.Key)
+				return fmt.Errorf("error handling key %s", kv.Key)
 			}
 			if done {
 				break
@@ -500,7 +509,7 @@ func ParseFilters(filters string) ([]Filter, error) {
 	return results, nil
 }
 
-func rawJsonMarshal(data any) string {
+func rawJSONMarshal(data any) string {
 	b, err := json.Marshal(data)
 	if err != nil {
 		return ""
@@ -508,9 +517,9 @@ func rawJsonMarshal(data any) string {
 	return string(b)
 }
 
-func rawJsonUnmarshal(valJson string) map[string]any {
+func rawJSONUnmarshal(valJSON string) map[string]any {
 	val := map[string]any{}
-	if err := json.Unmarshal([]byte(valJson), &val); err != nil {
+	if err := json.Unmarshal([]byte(valJSON), &val); err != nil {
 		val = nil
 	}
 	return val

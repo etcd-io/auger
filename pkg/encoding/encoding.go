@@ -33,11 +33,11 @@ const (
 	StorageBinaryMediaType = "application/vnd.kubernetes.storagebinary"
 	ProtobufMediaType      = "application/vnd.kubernetes.protobuf"
 	YamlMediaType          = "application/yaml"
-	JsonMediaType          = "application/json"
+	JsonMediaType          = "application/json" //nolint:staticcheck
 
 	ProtobufShortname = "proto"
 	YamlShortname     = "yaml"
-	JsonShortname     = "json"
+	JsonShortname     = "json" //nolint:staticcheck
 )
 
 // See k8s.io/apimachinery/pkg/runtime/serializer/protobuf.go
@@ -133,7 +133,7 @@ func DetectAndExtract(in []byte) (string, []byte, error) {
 	if pb, ok := tryFindProto(in); ok {
 		return StorageBinaryMediaType, pb, nil
 	}
-	if rawJs, ok := tryFindJson(in); ok {
+	if rawJs, ok := tryFindJSON(in); ok {
 		js, err := rawJs.MarshalJSON()
 		if err != nil {
 			return "", nil, err
@@ -154,8 +154,8 @@ func tryFindProto(in []byte) ([]byte, bool) {
 
 const jsonStartChars = "{["
 
-// TryFindJson searches for the start of a valid json substring, and, if found, returns the json.
-func tryFindJson(in []byte) (*json.RawMessage, bool) {
+// tryFindJSON searches for the start of a valid json substring, and, if found, returns the json.
+func tryFindJSON(in []byte) (*json.RawMessage, bool) {
 	var js json.RawMessage
 
 	i := bytes.IndexAny(in, jsonStartChars)
@@ -233,7 +233,7 @@ func newCodec(codecs serializer.CodecFactory, typeMeta *runtime.TypeMeta, mediaT
 func DecodeTypeMeta(inMediaType string, in []byte) (*runtime.TypeMeta, error) {
 	switch inMediaType {
 	case JsonMediaType:
-		return typeMetaFromJson(in)
+		return typeMetaFromJSON(in)
 	case StorageBinaryMediaType:
 		return typeMetaFromBinaryStorage(in)
 	case YamlMediaType:
@@ -243,7 +243,7 @@ func DecodeTypeMeta(inMediaType string, in []byte) (*runtime.TypeMeta, error) {
 	}
 }
 
-func typeMetaFromJson(in []byte) (*runtime.TypeMeta, error) {
+func typeMetaFromJSON(in []byte) (*runtime.TypeMeta, error) {
 	var meta runtime.TypeMeta
 	if err := json.Unmarshal(in, &meta); err != nil {
 		return nil, err

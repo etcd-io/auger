@@ -45,7 +45,7 @@ func TestTryFindProto(t *testing.T) {
 	}
 }
 
-var findJsonTests = []struct {
+var findJSONTests = []struct {
 	in       string
 	ok       bool
 	expected string
@@ -64,9 +64,9 @@ var findJsonTests = []struct {
 	{"{}[", false, ""},
 }
 
-func TestTryFindJson(t *testing.T) {
-	for _, test := range findJsonTests {
-		out, ok := tryFindJson([]byte(test.in))
+func TestTryFindJSON(t *testing.T) {
+	for _, test := range findJSONTests {
+		out, ok := tryFindJSON([]byte(test.in))
 		if test.ok != ok {
 			t.Errorf("got ok=%t, want ok=%t for %+v", ok, test.ok, test)
 		}

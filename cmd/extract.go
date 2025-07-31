@@ -202,7 +202,7 @@ func printValue(filename string, key string, version string, raw bool, outMediaT
 			return err
 		}
 		if len(versions) == 0 {
-			return fmt.Errorf("No versions found for key: %s", key)
+			return fmt.Errorf("no versions found for key: %s", key)
 		}
 
 		v = maxInSlice(versions)
