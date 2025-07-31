@@ -33,11 +33,11 @@ const (
 	StorageBinaryMediaType = "application/vnd.kubernetes.storagebinary"
 	ProtobufMediaType      = "application/vnd.kubernetes.protobuf"
 	YamlMediaType          = "application/yaml"
-	JsonMediaType          = "application/json"
+	JsonMediaType          = "application/json" //nolint:staticcheck
 
 	ProtobufShortname = "proto"
 	YamlShortname     = "yaml"
-	JsonShortname     = "json"
+	JsonShortname     = "json" //nolint:staticcheck
 )
 
 // See k8s.io/apimachinery/pkg/runtime/serializer/protobuf.go
@@ -154,7 +154,7 @@ func tryFindProto(in []byte) ([]byte, bool) {
 
 const jsonStartChars = "{["
 
-// TryFindJSON searches for the start of a valid json substring, and, if found, returns the json.
+// tryFindJSON searches for the start of a valid json substring, and, if found, returns the json.
 func tryFindJSON(in []byte) (*json.RawMessage, bool) {
 	var js json.RawMessage
 

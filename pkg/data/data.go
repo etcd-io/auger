@@ -65,8 +65,10 @@ type KeySummaryStats struct {
 // ValueJson gets the json representation of a kubernetes object stored in etcd.
 //
 // Deprecated: Use ValueJSON instead.
+//
+//nolint:staticcheck
 func (ks *KeySummary) ValueJson() string {
-	return rawJSONMarshal(ks.Value)
+	return ks.ValueJSON()
 }
 
 // ValueJSON gets the json representation of a kubernetes object stored in etcd
