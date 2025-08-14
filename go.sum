@@ -477,8 +477,8 @@ go.augendre.info/fatcontext v0.8.0 h1:2dfk6CQbDGeu1YocF59Za5Pia7ULeAM6friJ3LP7lm
 go.augendre.info/fatcontext v0.8.0/go.mod h1:oVJfMgwngMsHO+KB2MdgzcO+RvtNdiCEOlWvSFtax/s=
 go.etcd.io/bbolt v1.4.1 h1:5mOV+HWjIPLEAlUGMsveaUvK2+byZMFOzojoi7bh7uI=
 go.etcd.io/bbolt v1.4.1/go.mod h1:c8zu2BnXWTu2XM4XcICtbGSl9cFwsXtcf9zLt2OncM8=
-go.etcd.io/etcd/api/v3 v3.6.0 h1:vdbkcUBGLf1vfopoGE/uS3Nv0KPyIpUV/HM6w9yx2kM=
-go.etcd.io/etcd/api/v3 v3.6.0/go.mod h1:Wt5yZqEmxgTNJGHob7mTVBJDZNXiHPtXTcPab37iFOw=
+go.etcd.io/etcd/api/v3 v3.6.4 h1:7F6N7toCKcV72QmoUKa23yYLiiljMrT4xCeBL9BmXdo=
+go.etcd.io/etcd/api/v3 v3.6.4/go.mod h1:eFhhvfR8Px1P6SEuLT600v+vrhdDTdcfMzmnxVXXSbk=
 go.etcd.io/etcd/client/pkg/v3 v3.6.1 h1:CxDVv8ggphmamrXM4Of8aCC8QHzDM4tGcVr9p2BSoGk=
 go.etcd.io/etcd/client/pkg/v3 v3.6.1/go.mod h1:aTkCp+6ixcVTZmrJGa7/Mc5nMNs59PEgBbq+HCmWyMc=
 go.etcd.io/etcd/client/v3 v3.6.0 h1:/yjKzD+HW5v/3DVj9tpwFxzNbu8hjcKID183ug9duWk=
