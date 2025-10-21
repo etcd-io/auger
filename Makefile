@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-NAME ?= auger
 GOOS ?= linux
 GOARCH ?= amd64
 GOFILES = $(shell find . -name \*.go)
@@ -34,8 +33,20 @@ verify:
 # Local development build
 build:
 	@mkdir -p build
-	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) go build -o build/$(NAME)
-	@echo build/$(NAME) built!
+	@echo "building for $(GOOS)/$(GOARCH)"
+	@GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) go build \
+		-ldflags "-X github.com/etcd-io/auger/cmd.appVersion=$(shell git describe --tags --dirty --always) \
+			-X github.com/etcd-io/auger/cmd.gitCommit=$(shell git rev-parse --short HEAD) \
+			-X github.com/etcd-io/auger/cmd.buildDate=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+		-o build/auger
+	@echo build/auger built!
+	@GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) go build \
+		-ldflags "-X github.com/etcd-io/auger/augerctl/command.appVersion=$(shell git describe --tags --dirty --always) \
+			-X github.com/etcd-io/auger/augerctl/command.gitCommit=$(shell git rev-parse --short HEAD) \
+			-X github.com/etcd-io/auger/augerctl/command.buildDate=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+		-o build/augerctl augerctl/main.go
+	@echo build/augerctl built!
+
 
 # Local development test
 # `go test` automatically manages the build, so no need to depend on the build target here in make
