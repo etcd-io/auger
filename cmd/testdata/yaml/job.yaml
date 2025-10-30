@@ -30,7 +30,6 @@ spec:
       controller-uid: a4acc46c-5b56-11e7-8d4b-42010a800002
   template:
     metadata:
-      creationTimestamp: null
       labels:
         controller-uid: a4acc46c-5b56-11e7-8d4b-42010a800002
         job-name: pi
