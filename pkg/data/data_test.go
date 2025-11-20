@@ -20,6 +20,8 @@ import (
 	"testing"
 
 	"github.com/etcd-io/auger/pkg/scheme"
+
+	"go.etcd.io/etcd/api/v3/mvccpb"
 )
 
 const (
@@ -107,6 +109,34 @@ func TestListKeySummariesFilters(t *testing.T) {
 	}
 }
 
+func TestListKeySummariesUsesKeyVersion(t *testing.T) {
+	versionInfo := collectKeyVersionInfo(t, dbWithCrdFile)
+	results, err := ListKeySummaries(scheme.Codecs, dbWithCrdFile, nil, ProjectEverything, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(results) == 0 {
+		t.Fatalf("expected results for %s", dbWithCrdFile)
+	}
+
+	var diffKey string
+	for _, result := range results {
+		info, ok := versionInfo[result.Key]
+		if !ok {
+			t.Fatalf("missing version info for key %q", result.Key)
+		}
+		if result.Version != info.version {
+			t.Fatalf("key %q reported version %d, expected %d", result.Key, result.Version, info.version)
+		}
+		if info.updateCount > 1 && info.modRevision != info.version {
+			diffKey = result.Key
+		}
+	}
+	if diffKey == "" {
+		t.Fatalf("fixture %s must include a key with multiple versions and differing mod revision for this regression test", dbWithCrdFile)
+	}
+}
+
 func TestParseFilters(t *testing.T) {
 	cases := []struct {
 		name      string
@@ -172,4 +202,41 @@ func mustBuildFilter(fc *FieldConstraint) Filter {
 		panic(err)
 	}
 	return filter
+}
+
+type keyVersionInfo struct {
+	version     int64
+	modRevision int64
+	updateCount int
+}
+
+func collectKeyVersionInfo(t *testing.T, file string) map[string]keyVersionInfo {
+	t.Helper()
+
+	db, err := boltOpen(file)
+	if err != nil {
+		t.Fatalf("failed to open db file %s: %v", file, err)
+	}
+	defer db.Close()
+
+	info := make(map[string]keyVersionInfo)
+	err = walk(db, func(r revKey, kv *mvccpb.KeyValue) (bool, error) {
+		key := string(kv.Key)
+		if r.tombstone {
+			delete(info, key)
+			return false, nil
+		}
+		entry := info[key]
+		entry.updateCount++
+		if kv.Version >= entry.version {
+			entry.version = kv.Version
+			entry.modRevision = kv.ModRevision
+		}
+		info[key] = entry
+		return false, nil
+	})
+	if err != nil {
+		t.Fatalf("failed to collect version info: %v", err)
+	}
+	return info
 }
