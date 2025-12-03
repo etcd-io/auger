@@ -295,8 +295,8 @@ func ListKeySummaries(codecs serializer.CodecFactory, filename string, filters [
 				}
 				m[string(kv.Key)] = ks
 			} else {
-				if kv.ModRevision > ks.Version {
-					ks.Version = kv.ModRevision
+				if kv.Version > ks.Version {
+					ks.Version = kv.Version
 					ks.Stats.ValueSize = len(kv.Value)
 				}
 				ks.Stats.VersionCount++
