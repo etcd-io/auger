@@ -17,6 +17,7 @@ GOOS ?= linux
 GOARCH ?= amd64
 GOFILES = $(shell find . -name \*.go)
 CGO_ENABLED ?= 0
+GOLANGCI_LINT_VERSION ?= v2.5.0
 
 .PHONY: fmt
 fmt:
@@ -28,7 +29,9 @@ fmt:
 
 .PHONY: verify
 verify:
-	go tool golangci-lint run --config tools/.golangci.yaml ./...
+	@echo "Installing golangci-lint $(GOLANGCI_LINT_VERSION)"
+	@GOBIN=$(CURDIR)/.bin go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION)
+	@$(CURDIR)/.bin/golangci-lint run --config tools/.golangci.yaml ./...
 
 # Local development build
 build:
@@ -57,7 +60,7 @@ test: build
 	go test ./...
 
 clean:
-	rm -rf build
+	rm -rf build .bin
 
 pkg/scheme/scheme.go: ./hack/gen_scheme.sh go.mod
 	go mod vendor
