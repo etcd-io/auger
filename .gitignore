@@ -1,5 +1,6 @@
 auger
 build
+.bin
 vendor
 
 # IDEs
