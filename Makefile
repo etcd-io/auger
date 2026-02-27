@@ -52,7 +52,6 @@ build:
 
 
 # Local development test
-# `go test` automatically manages the build, so no need to depend on the build target here in make
 test: build
 	@echo Vetting
 	go vet ./...
