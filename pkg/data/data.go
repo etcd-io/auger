@@ -213,7 +213,10 @@ func HashByRevision(filename string, revision int64) (Checksum, error) {
 func getCompactRevision(db *bolt.DB) (int64, error) {
 	compactRev := int64(0)
 	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(metaBucket)
+		b, err := bucketOrError(tx, metaBucket)
+		if err != nil {
+			return err
+		}
 		finishedCompactBytes := b.Get(finishedCompactKeyName)
 		if len(finishedCompactBytes) != 0 {
 			compactRev = bytesToRev(finishedCompactBytes).main
@@ -427,7 +430,10 @@ func walkRevision(db *bolt.DB, revision int64, f func(r revKey, kv *mvccpb.KeyVa
 
 func walk(db *bolt.DB, f func(r revKey, kv *mvccpb.KeyValue) (bool, error)) error {
 	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(keyBucket)
+		b, err := bucketOrError(tx, keyBucket)
+		if err != nil {
+			return err
+		}
 		c := b.Cursor()
 
 		for k, v := c.First(); k != nil; k, v = c.Next() {
@@ -439,7 +445,7 @@ func walk(db *bolt.DB, f func(r revKey, kv *mvccpb.KeyValue) (bool, error)) erro
 			}
 			done, err := f(revision, kv)
 			if err != nil {
-				return fmt.Errorf("error handling key %s", kv.Key)
+				return fmt.Errorf("error handling key %s: %w", kv.Key, err)
 			}
 			if done {
 				break
@@ -451,6 +457,14 @@ func walk(db *bolt.DB, f func(r revKey, kv *mvccpb.KeyValue) (bool, error)) erro
 		return err
 	}
 	return nil
+}
+
+func bucketOrError(tx *bolt.Tx, bucketName []byte) (*bolt.Bucket, error) {
+	b := tx.Bucket(bucketName)
+	if b == nil {
+		return nil, fmt.Errorf("invalid etcd boltdb: missing %q bucket", bucketName)
+	}
+	return b, nil
 }
 
 // A revKey indicates modification of the key-value space.

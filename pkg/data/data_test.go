@@ -17,10 +17,13 @@ limitations under the License.
 package data
 
 import (
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/etcd-io/auger/pkg/scheme"
 
+	bolt "go.etcd.io/bbolt"
 	"go.etcd.io/etcd/api/v3/mvccpb"
 )
 
@@ -196,6 +199,33 @@ func TestParseFilters(t *testing.T) {
 	}
 }
 
+func TestListKeySummariesMissingKeyBucket(t *testing.T) {
+	file := createTestDB(t, func(tx *bolt.Tx) error {
+		_, err := tx.CreateBucket(metaBucket)
+		return err
+	})
+
+	_, err := ListKeySummaries(scheme.Codecs, file, nil, ProjectEverything, 0)
+	if err == nil {
+		t.Fatalf("expected error when key bucket is missing")
+	}
+	if !strings.Contains(err.Error(), `missing "key" bucket`) {
+		t.Fatalf("expected missing key bucket error, got: %v", err)
+	}
+}
+
+func TestHashByRevisionMissingMetaBucket(t *testing.T) {
+	file := createTestDB(t, nil)
+
+	_, err := HashByRevision(file, 0)
+	if err == nil {
+		t.Fatalf("expected error when meta bucket is missing")
+	}
+	if !strings.Contains(err.Error(), `missing "meta" bucket`) {
+		t.Fatalf("expected missing meta bucket error, got: %v", err)
+	}
+}
+
 func mustBuildFilter(fc *FieldConstraint) Filter {
 	filter, err := fc.BuildFilter()
 	if err != nil {
@@ -239,4 +269,26 @@ func collectKeyVersionInfo(t *testing.T, file string) map[string]keyVersionInfo 
 		t.Fatalf("failed to collect version info: %v", err)
 	}
 	return info
+}
+
+func createTestDB(t *testing.T, initTx func(tx *bolt.Tx) error) string {
+	t.Helper()
+
+	file := filepath.Join(t.TempDir(), "db")
+	db, err := bolt.Open(file, 0o600, nil)
+	if err != nil {
+		t.Fatalf("failed to create db file %s: %v", file, err)
+	}
+	defer db.Close()
+
+	err = db.Update(func(tx *bolt.Tx) error {
+		if initTx == nil {
+			return nil
+		}
+		return initTx(tx)
+	})
+	if err != nil {
+		t.Fatalf("failed to initialize db file %s: %v", file, err)
+	}
+	return file
 }
