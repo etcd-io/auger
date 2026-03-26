@@ -11,3 +11,6 @@ emeritus_approvers:
   - cheftako
   - Quentin-M
   - logicalhan
+
+reviewers:
+  - hwdef
