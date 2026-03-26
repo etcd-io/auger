@@ -23,10 +23,10 @@ import (
 	"fmt"
 	"io"
 
-	yaml "gopkg.in/yaml.v2"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
+	"sigs.k8s.io/yaml"
 )
 
 const (
@@ -96,11 +96,7 @@ func Convert(codecs serializer.CodecFactory, inMediaType, outMediaType string, i
 			encoded = append(encoded, '\n')
 		}
 	} else if inMediaType == JsonMediaType && outMediaType == YamlMediaType {
-		val := map[string]any{}
-		if err := json.Unmarshal(in, &val); err != nil {
-			return nil, nil, fmt.Errorf("error decoding from %s: %w", inMediaType, err)
-		}
-		encoded, err = yaml.Marshal(val)
+		encoded, err = yaml.JSONToYAML(in)
 		if err != nil {
 			return nil, nil, fmt.Errorf("error encoding from %s: %w", outMediaType, err)
 		}
