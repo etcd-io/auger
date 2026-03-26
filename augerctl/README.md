@@ -29,19 +29,19 @@ and the binary will be available in the path `$GOBIN` or `$GOPATH/bin`
 
 ### --endpoints
 + gRPC endpoints of etcd cluster
-+ default: `"http://127.0.0.1:2379"`
++ default: `ETCDCTL_ENDPOINTS` env var, otherwise `"127.0.0.1:2379"`
 
 ### --cert
 + path to the etcd client TLS cert file
-+ default: none
++ default: `ETCDCTL_CERT` env var
 
 ### --key
 + path to the etcd client TLS key file
-+ default: none
++ default: `ETCDCTL_KEY` env var
 
 ### --cacert
 + path to the etcd client TLS CA cert file
-+ default: none
++ default: `ETCDCTL_CACERT` env var
 
 ### --user
 + username for authentication, provide username[:password]
@@ -114,7 +114,16 @@ TODO
 
 ## Endpoint
 
-If the etcd cluster isn't available on `http://127.0.0.1:2379`, specify a `--endpoints` flag.
+`augerctl` falls back to the same connection environment variables used by `etcdctl`:
+
+``` bash
+export ETCDCTL_CACERT=/etc/etcd/pki/ca.crt
+export ETCDCTL_CERT=/etc/etcd/pki/client.crt
+export ETCDCTL_KEY=/etc/etcd/pki/client.key
+export ETCDCTL_ENDPOINTS=https://127.0.0.1:2379
+```
+
+Flags still take precedence, so use `--endpoints`, `--cert`, `--key`, or `--cacert` to override the environment for a specific command.
 
 ## Project Details
 

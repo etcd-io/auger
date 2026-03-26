@@ -18,6 +18,9 @@ limitations under the License.
 package command
 
 import (
+	"os"
+	"strings"
+
 	"github.com/spf13/cobra"
 
 	"go.etcd.io/etcd/client/pkg/v3/transport"
@@ -42,13 +45,13 @@ func NewCtlCommand() *cobra.Command {
 		Use:   "augerctl",
 		Short: "A simple command line client for directly accessing data objects stored in etcd by Kubernetes.",
 	}
-	cmd.PersistentFlags().StringSliceVar(&flags.Endpoints, "endpoints", []string{"127.0.0.1:2379"}, "gRPC endpoints of etcd cluster")
+	cmd.PersistentFlags().StringSliceVar(&flags.Endpoints, "endpoints", defaultEndpoints(), "gRPC endpoints of etcd cluster; falls back to ETCDCTL_ENDPOINTS or 127.0.0.1:2379")
 
 	cmd.PersistentFlags().BoolVar(&flags.InsecureDiscovery, "insecure-discovery", true, "accept insecure SRV records describing cluster endpoints")
 	cmd.PersistentFlags().BoolVar(&flags.InsecureSkipVerify, "insecure-skip-tls-verify", false, "skip server certificate verification")
-	cmd.PersistentFlags().StringVar(&flags.TLS.CertFile, "cert", "", "path to the etcd client TLS cert file")
-	cmd.PersistentFlags().StringVar(&flags.TLS.KeyFile, "key", "", "path to the etcd client TLS key file")
-	cmd.PersistentFlags().StringVar(&flags.TLS.TrustedCAFile, "cacert", "", "path to the etcd client TLS CA cert file")
+	cmd.PersistentFlags().StringVar(&flags.TLS.CertFile, "cert", os.Getenv("ETCDCTL_CERT"), "path to the etcd client TLS cert file; falls back to ETCDCTL_CERT")
+	cmd.PersistentFlags().StringVar(&flags.TLS.KeyFile, "key", os.Getenv("ETCDCTL_KEY"), "path to the etcd client TLS key file; falls back to ETCDCTL_KEY")
+	cmd.PersistentFlags().StringVar(&flags.TLS.TrustedCAFile, "cacert", os.Getenv("ETCDCTL_CACERT"), "path to the etcd client TLS CA cert file; falls back to ETCDCTL_CACERT")
 	cmd.PersistentFlags().StringVar(&flags.User, "user", "", "username for authentication, provide username[:password]")
 	cmd.PersistentFlags().StringVar(&flags.Password, "password", "", "password for authentication, only available if --user has no password")
 
@@ -57,4 +60,25 @@ func NewCtlCommand() *cobra.Command {
 	)
 	cmd.AddCommand(versionCmd)
 	return cmd
+}
+
+func defaultEndpoints() []string {
+	var endpoints []string
+
+	if value, ok := os.LookupEnv("ETCDCTL_ENDPOINTS"); ok {
+		env := strings.Split(value, ",")
+
+		for _, endpoint := range env {
+			endpoint = strings.TrimSpace(endpoint)
+			if endpoint != "" {
+				endpoints = append(endpoints, endpoint)
+			}
+		}
+	}
+
+	if len(endpoints) == 0 {
+		return []string{"127.0.0.1:2379"}
+	}
+
+	return endpoints
 }
