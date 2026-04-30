@@ -44,7 +44,7 @@ package scheme
 import (
 EOF
 
-  find "${ROOT_DIR}/vendor/k8s.io/api" | grep register.go | sed "s#${ROOT_DIR}/vendor/##g" | sed "s#/register.go##g" | awk -F '/' '{print "	"$3$4, "\""$1"\/"$2"\/"$3"\/"$4"\""}' | sort
+  find "${ROOT_DIR}/vendor/k8s.io/api" | grep register.go | sed "s#${ROOT_DIR}/vendor/##g" | sed "s#/register.go##g" | awk -F '/' '{print "	"$3$4, "\""$1"/"$2"/"$3"/"$4"\""}' | sort
 
   cat <<EOF
 	"k8s.io/apimachinery/pkg/runtime"
@@ -54,7 +54,7 @@ EOF
 func AddToScheme(scheme *runtime.Scheme) {
 EOF
 
-  find "${ROOT_DIR}/vendor/k8s.io/api" | grep register.go | sed "s#${ROOT_DIR}/vendor/##g" | sed "s#/register.go##g" | awk -F '/' '{print "	_ = " $3$4"\.AddToScheme(scheme)"}' | sort
+  find "${ROOT_DIR}/vendor/k8s.io/api" | grep register.go | sed "s#${ROOT_DIR}/vendor/##g" | sed "s#/register.go##g" | awk -F '/' '{print "	_ = " $3$4".AddToScheme(scheme)"}' | sort
 
   cat <<EOF
 }
