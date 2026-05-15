@@ -30,6 +30,9 @@ type jsonPrinter struct {
 
 func (p *jsonPrinter) Print(kv *client.KeyValue) error {
 	value := kv.Value
+	if value == nil {
+		value = kv.PrevValue
+	}
 	inMediaType, _, err := encoding.DetectAndExtract(value)
 	if err != nil {
 		return err
