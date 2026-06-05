@@ -53,6 +53,9 @@ func (c *client) Get(ctx context.Context, prefix string, opOpts ...OpOption) (re
 
 	// it is a key or it is not paging
 	if single || opt.chunkSize == 0 {
+		if opt.limit > 0 {
+			opts = append(opts, clientv3.WithLimit(opt.limit))
+		}
 		resp, err := c.client.Get(ctx, path, opts...)
 		if err != nil {
 			return 0, err
@@ -67,16 +70,26 @@ func (c *client) Get(ctx context.Context, prefix string, opOpts ...OpOption) (re
 
 	// paging for content
 	opts = append(opts, clientv3.WithLimit(opt.chunkSize))
+	var returned int64
 	for key := path; ; {
 		resp, err := c.client.Get(ctx, key, opts...)
 		if err != nil {
 			return 0, err
 		}
 
-		err = iterateList(resp.Kvs, opt.response)
+		kvs := resp.Kvs
+		if opt.limit > 0 {
+			remaining := opt.limit - returned
+			if int64(len(kvs)) > remaining {
+				kvs = kvs[:remaining]
+			}
+		}
+
+		err = iterateList(kvs, opt.response)
 		if err != nil {
 			return 0, err
 		}
+		returned += int64(len(kvs))
 
 		// if revision is not set, it is set to the revision of the first response.
 		if rev == 0 {
@@ -84,6 +97,9 @@ func (c *client) Get(ctx context.Context, prefix string, opOpts ...OpOption) (re
 			opts = append(opts, clientv3.WithRev(resp.Header.Revision))
 		}
 
+		if opt.limit > 0 && returned >= opt.limit {
+			break
+		}
 		if !resp.More {
 			break
 		}

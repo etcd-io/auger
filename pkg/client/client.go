@@ -54,6 +54,8 @@ type op struct {
 	// max number of results per clientv3 request.
 	chunkSize int64
 	revision  int64
+	// max total number of results returned. 0 means no limit.
+	limit int64
 }
 
 // OpOption is the option for the operation.
@@ -85,6 +87,14 @@ func WithResponse(response func(kv *KeyValue) error) OpOption {
 func WithChunkSize(chunkSize int64) OpOption {
 	return func(o *op) {
 		o.chunkSize = chunkSize
+	}
+}
+
+// WithLimit sets the max total number of results returned by Get.
+// A value of 0 means no limit.
+func WithLimit(limit int64) OpOption {
+	return func(o *op) {
+		o.limit = limit
 	}
 }
 
