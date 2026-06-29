@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM docker.io/golang:1.26.3-alpine@sha256:91eda9776261207ea25fd06b5b7fed8d397dd2c0a283e77f2ab6e91bfa71079d
+FROM docker.io/golang:1.26.4-alpine@sha256:5e5e60ea14e48d2039718813f156ed8ceaf1cee274d9930bde91dcb8cfd90103
 
 RUN apk add --no-cache curl git make && rm -rf /var/cache/apk/*
 
