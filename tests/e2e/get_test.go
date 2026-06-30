@@ -64,3 +64,30 @@ func TestGetWithLimit(t *testing.T) {
 		t.Errorf("Got kind: %s, expected ServiceAccount", got.Kind)
 	}
 }
+
+func TestGetWithoutLimit(t *testing.T) {
+	// Contrast case for TestGetWithLimit: the same serviceaccounts query with no
+	// --limit must return more than one document. This proves --limit 1 genuinely
+	// truncates the result set, rather than the prefix happening to hold a single
+	// record, which would make the TestGetWithLimit assertion pass vacuously.
+	out, err := exec.Command(augerctl,
+		"--endpoints", endpoint,
+		"get", "serviceaccounts",
+	).Output()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	docs := bytes.Split(bytes.TrimSpace(out), []byte("\n---\n"))
+	if len(docs) <= 1 {
+		t.Errorf("expected more than 1 document without --limit, got %d", len(docs))
+	}
+
+	got := corev1.ServiceAccount{}
+	if err := yaml.Unmarshal(docs[0], &got); err != nil {
+		t.Fatalf("decode first document: %v", err)
+	}
+	if got.Kind != "ServiceAccount" {
+		t.Errorf("Got kind: %s, expected ServiceAccount", got.Kind)
+	}
+}
