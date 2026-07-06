@@ -31,6 +31,7 @@ type getFlagpole struct {
 	Output    string
 	ChunkSize int64
 	Prefix    string
+	Limit     int64
 }
 
 var getExample = `
@@ -85,6 +86,7 @@ func newCtlGetCommand(f *flagpole) *cobra.Command {
 	cmd.Flags().StringVarP(&flags.Namespace, "namespace", "n", "", "namespace of resource")
 	cmd.Flags().Int64Var(&flags.ChunkSize, "chunk-size", 500, "chunk size of the list pager")
 	cmd.Flags().StringVar(&flags.Prefix, "prefix", "/registry", "prefix to prepend to the resource")
+	cmd.Flags().Int64Var(&flags.Limit, "limit", 0, "max total number of results returned (0 means no limit)")
 
 	return cmd
 }
@@ -118,6 +120,7 @@ func getCommand(ctx context.Context, etcdclient client.Client, flags *getFlagpol
 		client.WithName(targetName, targetNamespace),
 		client.WithGroupResource(targetGr),
 		client.WithChunkSize(flags.ChunkSize),
+		client.WithLimit(flags.Limit),
 		client.WithResponse(printer.Print),
 	}
 
