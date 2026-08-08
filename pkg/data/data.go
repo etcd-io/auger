@@ -219,7 +219,11 @@ func getCompactRevision(db *bolt.DB) (int64, error) {
 		}
 		finishedCompactBytes := b.Get(finishedCompactKeyName)
 		if len(finishedCompactBytes) != 0 {
-			compactRev = bytesToRev(finishedCompactBytes).main
+			rev, err := bytesToRev(finishedCompactBytes)
+			if err != nil {
+				return err
+			}
+			compactRev = rev.main
 		}
 		return nil
 	})
@@ -437,10 +441,12 @@ func walk(db *bolt.DB, f func(r revKey, kv *mvccpb.KeyValue) (bool, error)) erro
 		c := b.Cursor()
 
 		for k, v := c.First(); k != nil; k, v = c.Next() {
-			revision := bytesToRev(k)
-			kv := &mvccpb.KeyValue{}
-			err := kv.Unmarshal(v)
+			revision, err := bytesToRev(k)
 			if err != nil {
+				return err
+			}
+			kv := &mvccpb.KeyValue{}
+			if err := kv.Unmarshal(v); err != nil {
 				return err
 			}
 			done, err := f(revision, kv)
@@ -491,15 +497,18 @@ const (
 	markTombstone     byte = 't'
 )
 
-func bytesToRev(bytes []byte) revKey {
+func bytesToRev(bytes []byte) (revKey, error) {
+	if len(bytes) < revBytesLen {
+		return revKey{}, fmt.Errorf("invalid etcd boltdb: revision key must be at least %d bytes, got %d", revBytesLen, len(bytes))
+	}
 	r := revKey{
 		main: int64(binary.BigEndian.Uint64(bytes[0:8])),
-		sub:  int64(binary.BigEndian.Uint64(bytes[9:])),
+		sub:  int64(binary.BigEndian.Uint64(bytes[9:revBytesLen])),
 	}
 	if len(bytes) >= markedRevBytesLen {
-		r.tombstone = bytes[markedRevBytesLen-1] == 't'
+		r.tombstone = bytes[markBytePosition] == markTombstone
 	}
-	return r
+	return r, nil
 }
 
 // ParseFilters parses a comma separated list of '<field>=<value>' filters where each field is

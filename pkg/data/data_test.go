@@ -214,6 +214,42 @@ func TestListKeySummariesMissingKeyBucket(t *testing.T) {
 	}
 }
 
+func TestListKeySummariesShortRevisionKey(t *testing.T) {
+	file := createTestDB(t, func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucket(keyBucket)
+		if err != nil {
+			return err
+		}
+		return b.Put([]byte("short"), []byte("value"))
+	})
+
+	_, err := ListKeySummaries(scheme.Codecs, file, nil, ProjectEverything, 0)
+	if err == nil {
+		t.Fatalf("expected error when a revision key is too short")
+	}
+	if !strings.Contains(err.Error(), "revision key must be at least") {
+		t.Fatalf("expected short revision key error, got: %v", err)
+	}
+}
+
+func TestHashByRevisionShortCompactRevision(t *testing.T) {
+	file := createTestDB(t, func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucket(metaBucket)
+		if err != nil {
+			return err
+		}
+		return b.Put(finishedCompactKeyName, []byte("short"))
+	})
+
+	_, err := HashByRevision(file, 0)
+	if err == nil {
+		t.Fatalf("expected error when the compact revision value is too short")
+	}
+	if !strings.Contains(err.Error(), "revision key must be at least") {
+		t.Fatalf("expected short revision key error, got: %v", err)
+	}
+}
+
 func TestHashByRevisionMissingMetaBucket(t *testing.T) {
 	file := createTestDB(t, nil)
 
