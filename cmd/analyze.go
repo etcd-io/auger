@@ -18,6 +18,8 @@ package cmd
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"sort"
 
 	"github.com/etcd-io/auger/pkg/data"
@@ -29,7 +31,7 @@ var analyzeCmd = &cobra.Command{
 	Use:   "analyze",
 	Short: "Analyze kubernetes data from the boltdb '.db' files etcd persists to.",
 	RunE: func(_ *cobra.Command, _ []string) error {
-		return analyzeValidateAndRun()
+		return analyze(os.Stdout, analyzeOpts.filename)
 	},
 }
 
@@ -45,7 +47,11 @@ func init() {
 }
 
 func analyzeValidateAndRun() error {
-	summaries, err := data.ListKeySummaries(scheme.Codecs, analyzeOpts.filename, []data.Filter{}, &data.KeySummaryProjection{HasKey: true, HasValue: false}, 0)
+	return analyze(os.Stdout, analyzeOpts.filename)
+}
+
+func analyze(out io.Writer, filename string) error {
+	summaries, err := data.ListKeySummaries(scheme.Codecs, filename, []data.Filter{}, &data.KeySummaryProjection{HasKey: true, HasValue: false}, 0)
 	if err != nil {
 		return err
 	}
@@ -82,28 +88,33 @@ func analyzeValidateAndRun() error {
 		totalAllVersionsValueSize += summary.Stats.AllVersionsValueSize
 	}
 
-	fmt.Printf("Total kubernetes objects: %d\n", len(summaries))
-	fmt.Printf("Total (all revisions) storage used by kubernetes objects: %d\n", totalAllVersionsKeySize+totalAllVersionsValueSize)
-	fmt.Printf("Current (latest revision) storage used by kubernetes objects: %d\n", totalKeySize+totalValueSize)
-	fmt.Printf("\n")
-	fmt.Printf("Most common kubernetes types:\n")
+	fmt.Fprintf(out, "Total kubernetes objects: %d\n", len(summaries))
+	fmt.Fprintf(out, "Total (all revisions) storage used by kubernetes objects: %d\n", totalAllVersionsKeySize+totalAllVersionsValueSize)
+	fmt.Fprintf(out, "Current (latest revision) storage used by kubernetes objects: %d\n", totalKeySize+totalValueSize)
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Most common kubernetes types:")
 	for i, entry := range entries {
-		fmt.Printf("\t%d\t%s\n", entry.count, entry.gvk)
-		if i > 10 {
+		if i >= 10 {
 			break
 		}
+		fmt.Fprintf(out, "\t%d\t%s\n", entry.count, entry.gvk)
 	}
 
 	sort.Slice(summaries[:], func(i, j int) bool {
 		return summaries[i].Stats.AllVersionsValueSize > summaries[j].Stats.AllVersionsValueSize
 	})
-	fmt.Printf("\n")
-	fmt.Printf("Largest objects (byte size sum of all revisions):\n")
-	for i, summary := range summaries {
-		fmt.Printf("\t%d\t%s (%s/%s)\n", summary.Stats.AllVersionsValueSize, summary.Key, summary.TypeMeta.APIVersion, summary.TypeMeta.Kind)
-		if i > 10 {
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Largest objects (byte size sum of all revisions):")
+	printed := 0
+	for _, summary := range summaries {
+		if summary.TypeMeta == nil {
+			continue
+		}
+		if printed >= 10 {
 			break
 		}
+		fmt.Fprintf(out, "\t%d\t%s (%s/%s)\n", summary.Stats.AllVersionsValueSize, summary.Key, summary.TypeMeta.APIVersion, summary.TypeMeta.Kind)
+		printed++
 	}
 
 	return nil
