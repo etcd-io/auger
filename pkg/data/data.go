@@ -32,6 +32,8 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 
+	"google.golang.org/protobuf/proto"
+
 	bolt "go.etcd.io/bbolt"
 	"go.etcd.io/etcd/api/v3/mvccpb"
 )
@@ -446,7 +448,7 @@ func walk(db *bolt.DB, f func(r revKey, kv *mvccpb.KeyValue) (bool, error)) erro
 				return err
 			}
 			kv := &mvccpb.KeyValue{}
-			if err := kv.Unmarshal(v); err != nil {
+			if err := proto.Unmarshal(v, kv); err != nil {
 				return err
 			}
 			done, err := f(revision, kv)
