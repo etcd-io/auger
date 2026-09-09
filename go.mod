@@ -6,8 +6,8 @@ toolchain go1.27.1
 
 require (
 	github.com/google/safetext v0.0.0-20220914124124-e18e3fe012bf
-	github.com/spf13/cobra v1.10.1
-	go.etcd.io/bbolt v1.4.3
+	github.com/spf13/cobra v1.10.2
+	go.etcd.io/bbolt v1.5.0
 	go.etcd.io/etcd/api/v3 v3.7.1
 	go.etcd.io/etcd/client/pkg/v3 v3.7.1
 	go.etcd.io/etcd/client/v3 v3.7.1
