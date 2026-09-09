@@ -31,6 +31,8 @@ import (
 	"github.com/google/safetext/yamltemplate"
 	"github.com/spf13/cobra"
 
+	"google.golang.org/protobuf/proto"
+
 	"go.etcd.io/etcd/api/v3/mvccpb"
 )
 
@@ -347,7 +349,7 @@ func summarize(s *data.KeySummary, fields []string) (string, error) {
 
 func extractKvFromLeafItem(raw []byte) (*mvccpb.KeyValue, error) {
 	kv := &mvccpb.KeyValue{}
-	err := kv.Unmarshal(raw)
+	err := proto.Unmarshal(raw, kv)
 	if err != nil {
 		return nil, err
 	}
