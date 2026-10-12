@@ -17,7 +17,7 @@ GOOS ?= linux
 GOARCH ?= amd64
 GOFILES = $(shell find . -name \*.go)
 CGO_ENABLED ?= 0
-GOLANGCI_LINT_VERSION ?= v2.13.1
+GOLANGCI_LINT_VERSION ?= v2.14.0
 
 .PHONY: fmt
 fmt:
