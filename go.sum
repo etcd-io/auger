@@ -50,8 +50,8 @@ github.com/go-openapi/swag/loading v0.28.0 h1:td8QZdZC9MIYGGSnSPKShKiK22I2tU5UQv
 github.com/go-openapi/swag/loading v0.28.0/go.mod h1:rXB0QiQX5mMveXEA7ouM4KiiM9jVJe4K6BVbwhD1M4k=
 github.com/go-openapi/swag/mangling v0.28.0 h1:pH8eyeNO9SLYsTMWJrurnNfKmDa28XrlA+HePVD53VM=
 github.com/go-openapi/swag/mangling v0.28.0/go.mod h1:jtBE2+V+3pILxOR7Vgce+Cwp6A2PgZbvVqfNntbVs0w=
-github.com/go-openapi/swag/netutils v0.28.0 h1:YXN6TALEi2pzts8/8GNm6T61HTAZsieukGZidap989k=
-github.com/go-openapi/swag/netutils v0.28.0/go.mod h1:J+WYyFMLtvtCGqa6jLv+YNUmIKI3ZRQRrvfNDMoQoEQ=
+github.com/go-openapi/swag/netutils v0.29.2 h1:dBli6jyUa93sDS/XYWShJzf4+nnVfFKfvY9SLUaUzB8=
+github.com/go-openapi/swag/netutils v0.29.2/go.mod h1:1pM6Xg/Um8E1eps3umWl8Hme3ByWXOtHsvFC0CULHUE=
 github.com/go-openapi/swag/pools v0.28.0 h1:HPMZWSAfce3rdVTFcjFiCIBtDg9h4x2QlRrHipwhxeU=
 github.com/go-openapi/swag/pools v0.28.0/go.mod h1:kVQefhSK5RWuRe7BXsL8htgBPAMpN7HDGpGEknqugeE=
 github.com/go-openapi/swag/stringutils v0.28.0 h1:ixsc9iYgDPubHL/8nSkbnryEHpD2VRlBMLKpQyPXcDU=
@@ -62,8 +62,8 @@ github.com/go-openapi/swag/yamlutils v0.28.0 h1:TV3JXH6DS46KUroDtMLAYHGkdWf5VDq3
 github.com/go-openapi/swag/yamlutils v0.28.0/go.mod h1:x0q/yndZHEgk9Rx3DyDqzFUmHy55KTvIZldvF2dTJXs=
 github.com/go-openapi/testify/enable/yaml/v2 v2.6.0 h1:gGHwAJ0R/5jU8BEGDbfRNR3hL68dAVi84WuOApp29B0=
 github.com/go-openapi/testify/enable/yaml/v2 v2.6.0/go.mod h1:tY+St1SGq4NFl0QIqdTY4aEdbChAHxhyB77XQi9iJCo=
-github.com/go-openapi/testify/v2 v2.6.0 h1:5PKH2HE7YJ/LuRPQGvSxBRlFXNQhSetBLlGAgUEu3ug=
-github.com/go-openapi/testify/v2 v2.6.0/go.mod h1:SgsVHtfooshd0tublTtJ50FPKhujf47YRqauXXOUxfw=
+github.com/go-openapi/testify/v2 v2.7.0 h1:bycOreEj6wfBvijg3YFogZ/sFjTCDmQnwSodSzHa3X8=
+github.com/go-openapi/testify/v2 v2.7.0/go.mod h1:SgsVHtfooshd0tublTtJ50FPKhujf47YRqauXXOUxfw=
 github.com/go-task/slim-sprig/v3 v3.0.0 h1:sUs3vkvUymDpBKi3qH1YSqBQk9+9D/8M2mN1vB6EwHI=
 github.com/go-task/slim-sprig/v3 v3.0.0/go.mod h1:W848ghGpv3Qj3dhTPRyJypKRiqCdHZiAzKg9hl15HA8=
 github.com/gogo/protobuf v1.3.2 h1:Ov1cvc58UF3b5XjBnZv7+opcTcQFZebYjWzi34vdm4Q=
