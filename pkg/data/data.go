@@ -252,6 +252,7 @@ func ListKeySummaries(codecs serializer.CodecFactory, filename string, filters [
 		}
 		if r.tombstone {
 			delete(m, string(kv.Key))
+			return false, nil
 		}
 		prefixAllowed := true
 		if prefixFilter != nil {
