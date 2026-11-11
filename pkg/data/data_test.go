@@ -17,11 +17,14 @@ limitations under the License.
 package data
 
 import (
+	"encoding/binary"
+	"fmt"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/etcd-io/auger/pkg/scheme"
+	"google.golang.org/protobuf/proto"
 
 	bolt "go.etcd.io/bbolt"
 	"go.etcd.io/etcd/api/v3/mvccpb"
@@ -230,6 +233,67 @@ func TestListKeySummariesShortRevisionKey(t *testing.T) {
 	if !strings.Contains(err.Error(), "revision key must be at least") {
 		t.Fatalf("expected short revision key error, got: %v", err)
 	}
+}
+
+func TestListKeySummariesTombstone(t *testing.T) {
+	const cm = `{"kind":"ConfigMap","apiVersion":"v1","metadata":{"name":"%s"}}`
+	file := createTestDB(t, func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucket(keyBucket)
+		if err != nil {
+			return err
+		}
+		for _, e := range []struct {
+			main      int64
+			tombstone bool
+			kv        *mvccpb.KeyValue
+		}{
+			{2, false, &mvccpb.KeyValue{Key: []byte("/registry/configmaps/default/deleted"), Value: []byte(fmt.Sprintf(cm, "deleted")), Version: 1}},
+			{3, false, &mvccpb.KeyValue{Key: []byte("/registry/configmaps/default/recreated"), Value: []byte(fmt.Sprintf(cm, "old")), Version: 1}},
+			{4, true, &mvccpb.KeyValue{Key: []byte("/registry/configmaps/default/deleted")}},
+			{5, true, &mvccpb.KeyValue{Key: []byte("/registry/configmaps/default/recreated")}},
+			{6, false, &mvccpb.KeyValue{Key: []byte("/registry/configmaps/default/recreated"), Value: []byte(fmt.Sprintf(cm, "new")), Version: 1}},
+		} {
+			v, err := proto.Marshal(e.kv)
+			if err != nil {
+				return err
+			}
+			if err := b.Put(testRevBytes(e.main, e.tombstone), v); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+
+	results, err := ListKeySummaries(scheme.Codecs, file, nil, ProjectEverything, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(results) != 1 {
+		t.Fatalf("expected only the recreated key, got %d results", len(results))
+	}
+	got := results[0]
+	if got.Key != "/registry/configmaps/default/recreated" {
+		t.Fatalf("unexpected key %q", got.Key)
+	}
+	if got.Version != 1 || got.Stats.VersionCount != 1 {
+		t.Errorf("expected version 1 and version count 1, got %d and %d", got.Version, got.Stats.VersionCount)
+	}
+	if got.TypeMeta == nil || got.TypeMeta.Kind != "ConfigMap" {
+		t.Errorf("expected ConfigMap type meta, got %v", got.TypeMeta)
+	}
+	if value := got.ValueJSON(); !strings.Contains(value, `"name":"new"`) {
+		t.Errorf("expected value of the recreated object, got %s", value)
+	}
+}
+
+func testRevBytes(main int64, tombstone bool) []byte {
+	b := make([]byte, revBytesLen, markedRevBytesLen)
+	binary.BigEndian.PutUint64(b[0:8], uint64(main))
+	b[8] = '_'
+	if tombstone {
+		b = append(b, markTombstone)
+	}
+	return b
 }
 
 func TestHashByRevisionShortCompactRevision(t *testing.T) {
