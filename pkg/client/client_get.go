@@ -69,7 +69,16 @@ func (c *client) Get(ctx context.Context, prefix string, opOpts ...OpOption) (re
 	}
 
 	// paging for content
-	opts = append(opts, clientv3.WithLimit(opt.chunkSize))
+	// WithPrefix derives the range end from the key of each request, so after the
+	// first chunk it would only match keys under the last key returned. Pin the
+	// range end of the whole prefix instead.
+	opts = []clientv3.OpOption{
+		clientv3.WithRange(clientv3.GetPrefixRangeEnd(path)),
+		clientv3.WithLimit(opt.chunkSize),
+	}
+	if rev != 0 {
+		opts = append(opts, clientv3.WithRev(rev))
+	}
 	var returned int64
 	for key := path; ; {
 		resp, err := c.client.Get(ctx, key, opts...)
