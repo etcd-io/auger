@@ -246,78 +246,78 @@ func ListKeySummaries(codecs serializer.CodecFactory, filename string, filters [
 
 	prefixFilter, filters := separatePrefixFilter(filters)
 	m := make(map[string]*KeySummary)
+	latestValues := make(map[string][]byte)
 	err = walk(db, func(r revKey, kv *mvccpb.KeyValue) (bool, error) {
 		if revision > 0 && r.main > revision {
 			return false, nil
 		}
 		if r.tombstone {
 			delete(m, string(kv.Key))
+			delete(latestValues, string(kv.Key))
 			return false, nil
 		}
-		prefixAllowed := true
 		if prefixFilter != nil {
-			prefixAllowed, err = prefixFilter.Accept(&KeySummary{Key: string(kv.Key)})
+			prefixAllowed, err := prefixFilter.Accept(&KeySummary{Key: string(kv.Key)})
 			if err != nil {
 				return false, err
 			}
-		}
-		if prefixAllowed {
-			ks, ok := m[string(kv.Key)]
-			if !ok {
-				var buf []byte
-				var valJSON string
-				var typeMeta *runtime.TypeMeta
-				var err error
-				if buf, typeMeta, err = encoding.DetectAndConvert(codecs, encoding.JsonMediaType, kv.Value); err == nil {
-					valJSON = strings.TrimSpace(string(buf))
-				}
-				var key string
-				var value map[string]any
-				if proj.HasKey {
-					key = string(kv.Key)
-				}
-				// If the caller or filters need the value, we need to deserialize it.
-				// For filters we don't yet know if they need it, so if there are any filters we must include it.
-				if proj.HasValue || len(filters) > 0 {
-					value = rawJSONUnmarshal(valJSON)
-				}
-				ks = &KeySummary{
-					Key:     key,
-					Version: kv.Version,
-					Stats: &KeySummaryStats{
-						KeySize:              len(kv.Key),
-						ValueSize:            len(kv.Value),
-						AllVersionsKeySize:   len(kv.Key),
-						AllVersionsValueSize: len(kv.Value),
-						VersionCount:         1,
-					},
-					Value:    value,
-					TypeMeta: typeMeta,
-				}
-				for _, filter := range filters {
-					ok, err := filter.Accept(ks)
-					if err != nil {
-						return false, err
-					}
-					if !ok {
-						return false, nil
-					}
-				}
-				m[string(kv.Key)] = ks
-			} else {
-				if kv.Version > ks.Version {
-					ks.Version = kv.Version
-					ks.Stats.ValueSize = len(kv.Value)
-				}
-				ks.Stats.VersionCount++
-				ks.Stats.AllVersionsKeySize += len(kv.Key)
-				ks.Stats.AllVersionsValueSize += len(kv.Value)
+			if !prefixAllowed {
+				return false, nil
 			}
 		}
+		ks, ok := m[string(kv.Key)]
+		if !ok {
+			var key string
+			if proj.HasKey {
+				key = string(kv.Key)
+			}
+			m[string(kv.Key)] = &KeySummary{
+				Key:     key,
+				Version: kv.Version,
+				Stats: &KeySummaryStats{
+					KeySize:              len(kv.Key),
+					ValueSize:            len(kv.Value),
+					AllVersionsKeySize:   len(kv.Key),
+					AllVersionsValueSize: len(kv.Value),
+					VersionCount:         1,
+				},
+			}
+			latestValues[string(kv.Key)] = kv.Value
+			return false, nil
+		}
+		if kv.Version > ks.Version {
+			ks.Version = kv.Version
+			ks.Stats.ValueSize = len(kv.Value)
+			latestValues[string(kv.Key)] = kv.Value
+		}
+		ks.Stats.VersionCount++
+		ks.Stats.AllVersionsKeySize += len(kv.Key)
+		ks.Stats.AllVersionsValueSize += len(kv.Value)
 		return false, nil
 	})
 	if err != nil {
 		return nil, err
+	}
+	for k, ks := range m {
+		var valJSON string
+		if buf, typeMeta, err := encoding.DetectAndConvert(codecs, encoding.JsonMediaType, latestValues[k]); err == nil {
+			valJSON = strings.TrimSpace(string(buf))
+			ks.TypeMeta = typeMeta
+		}
+		// We only need the value if it is projected or used by a filter.
+		if proj.HasValue || len(filters) > 0 {
+			ks.Value = rawJSONUnmarshal(valJSON)
+		}
+		for _, filter := range filters {
+			ok, err := filter.Accept(ks)
+			if err != nil {
+				return nil, err
+			}
+			if !ok {
+				delete(m, k)
+				break
+			}
+		}
 	}
 	result := sortKeySummaries(m)
 	return result, nil

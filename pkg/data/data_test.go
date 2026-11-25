@@ -392,3 +392,63 @@ func createTestDB(t *testing.T, initTx func(tx *bolt.Tx) error) string {
 	}
 	return file
 }
+
+func TestListKeySummariesUsesLatestValue(t *testing.T) {
+	const cm = `{"kind":"ConfigMap","apiVersion":"v1","metadata":{"name":"app","namespace":"default"},"data":{"mode":"%s"}}`
+	const key = "/registry/configmaps/default/app"
+	file := createTestDB(t, func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucket(keyBucket)
+		if err != nil {
+			return err
+		}
+		for main, mode := range map[int64]string{2: "old", 3: "new"} {
+			v, err := proto.Marshal(&mvccpb.KeyValue{Key: []byte(key), Value: []byte(fmt.Sprintf(cm, mode)), Version: main - 1})
+			if err != nil {
+				return err
+			}
+			if err := b.Put(testRevBytes(main, false), v); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+
+	tests := []struct {
+		name         string
+		filters      []Filter
+		revision     int64
+		expectedMode string
+	}{
+		{name: "no filter", expectedMode: "new"},
+		{name: "filter on the latest value", filters: []Filter{mustBuildFilter(&FieldConstraint{lhs: ".Value.data.mode", op: Equals, rhs: "new"})}, expectedMode: "new"},
+		{name: "filter on an older value", filters: []Filter{mustBuildFilter(&FieldConstraint{lhs: ".Value.data.mode", op: Equals, rhs: "old"})}},
+		{name: "older revision", revision: 2, expectedMode: "old"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			results, err := ListKeySummaries(scheme.Codecs, file, tt.filters, ProjectEverything, tt.revision)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if tt.expectedMode == "" {
+				if len(results) != 0 {
+					t.Fatalf("expected no results, got %s", results[0].ValueJSON())
+				}
+				return
+			}
+			if len(results) != 1 {
+				t.Fatalf("expected 1 result, got %d", len(results))
+			}
+			if value := results[0].ValueJSON(); !strings.Contains(value, `"mode":"`+tt.expectedMode+`"`) {
+				t.Errorf("expected the value with mode %q, got %s", tt.expectedMode, value)
+			}
+			expectedVersion := int64(2)
+			if tt.revision == 2 {
+				expectedVersion = 1
+			}
+			if results[0].Version != expectedVersion || results[0].Stats.VersionCount != int(expectedVersion) {
+				t.Errorf("expected version and version count %d, got %d and %d", expectedVersion, results[0].Version, results[0].Stats.VersionCount)
+			}
+		})
+	}
+}
